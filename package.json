@@ -1,0 +1,30 @@
+{
+  "name": "kilimanjaro",
+  "version": "0.0.6",
+  "description": "Awesome Vuex2.0's for TypeScript2.0",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test": "mocha dist/test/*.js"
+  },
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts",
+    "dist/src"
+  ],
+  "keywords": [
+    "Vue"
+  ],
+  "author": "Herrington Darkholme",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chai": "^3.4.32",
+    "@types/mocha": "^2.2.31",
+    "chai": "^3.5.0",
+    "mocha": "^3.0.2",
+    "typescript": "2.1.0-dev.20160915"
+  },
+  "dependencies": {
+    "av-ts": "0.0.6"
+  }
+}
