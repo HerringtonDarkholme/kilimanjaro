@@ -1,6 +1,6 @@
 import {
   Subscriber, RawGetter, CommitOption,
-  WatchHandler, WatchOption,
+  WatchHandler, WatchOption, Unsubscription,
 } from './interface'
 import {Opt, RawActions, RawGetters, RawMutations} from './opt'
 import {State} from './state'
@@ -24,24 +24,32 @@ interface Mutations {
 }
 
 interface Actions {
-  [k: string]: Array<(t?: any) => Promise<any>>
+  [k: string]: Array<(t?: any) => void | {} | Promise<void | {}>>
 }
 
-export class Store<S, G, M, A, P> implements ActionStore<S, G, M, A> {
-  readonly dispatch: A = ((k: string) => (arg?: any) => {
-    let handlers = this._actions[k]
-    return Promise.all(handlers.map(h => h(arg))).catch(err => {
-        this._devtoolHook.emit('vuex:error', err)
-        throw err
-    })
-  }) as any
-  readonly commit: M = ((k: string) => (arg: any, opt: CommitOption) => {
-  }) as any
-  readonly getters: G = ((k: string) => this._vm[k]) as any
+export type AnyStore = Store<{}, {}, {}, {}, {}>
 
-  get state(): S {
-    return this._vm['state']
+const dispathImpl = (store: AnyStore) => (type: string) => (payload?: {}) => {
+  let handlers = store._actions[type]
+  return Promise.all(handlers.map(h => h(payload))).catch(err => {
+    store._devtoolHook.emit('vuex:error', err)
+    throw err
+  })
+}
+
+const commitImpl = (store: AnyStore) => (type: string) => (payload?: {}, opt?: CommitOption) => {
+  const mutation = {type, payload}
+  let handlers = store._mutations[type]
+  handlers.forEach(h => h(payload))
+
+  if (!opt || !opt.silent) {
+    store._subscribers.forEach(s => s(mutation, store.state))
   }
+}
+
+const getterImpl = (store: AnyStore) => (key: string) => store._vm[key]
+
+export class Store<S, G, M, A, P> implements ActionStore<S, G, M, A> {
 
   /** @internal */ _vm: Vue
   /** @internal */ _committing = false
@@ -49,9 +57,17 @@ export class Store<S, G, M, A, P> implements ActionStore<S, G, M, A> {
   /** @internal */ _getters: Getters = {}
   /** @internal */ _mutations: Mutations = {}
   /** @internal */ _actions: Actions = {}
+  /** @internal */ _subscribers: Subscriber<P, S>[] = []
 
   /** @internal */ _devtoolHook: any
 
+  readonly dispatch: A = dispathImpl(this) as any
+  readonly commit: M = commitImpl(this) as any
+  readonly getters: G = getterImpl(this) as any
+
+  get state(): S {
+    return this._vm['state']
+  }
 
   private constructor(opt: Opt<S, G, M, A, P>) {
     let state = State.create(opt._state)
@@ -64,8 +80,16 @@ export class Store<S, G, M, A, P> implements ActionStore<S, G, M, A> {
     return new Store(opt)
   }
 
-  subscribe(fn: Subscriber<P, S>): () => void {
-    return function() {
+  subscribe(fn: Subscriber<P, S>): Unsubscription {
+    const subs = this._subscribers
+    if (subs.indexOf(fn) < 0) {
+      subs.push(fn)
+    }
+    return () => {
+      const i = subs.indexOf(fn)
+      if (i > -1) {
+        subs.splice(i, 1)
+      }
     }
   }
 
@@ -80,7 +104,6 @@ export class Store<S, G, M, A, P> implements ActionStore<S, G, M, A> {
 
 }
 
-export type AnyStore = Store<{}, {}, {}, {}, {}>
 
 let binded = false
 export function install (_Vue: typeof Vue) {

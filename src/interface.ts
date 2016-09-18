@@ -18,3 +18,4 @@ export interface WatchOption<C, T>{
   handler?: WatchHandler<C, T>
 }
 
+export type Unsubscription = () => void
