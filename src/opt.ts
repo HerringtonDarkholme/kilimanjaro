@@ -80,7 +80,7 @@ export class Opt<S, G, M, A, P> {
   }
 
   done(): Store<S, G, M, A, P> {
-    return null as any
+    return new Store(this)
   }
 }
 
