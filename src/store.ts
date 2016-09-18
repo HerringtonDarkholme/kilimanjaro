@@ -5,7 +5,6 @@ import {
 import {Opt, RawActions, RawGetters, RawMutations} from './opt'
 import {State} from './state'
 import devtoolPlugin from './devtool'
-import applyMixin from './mixin'
 import Vue = require('vue')
 
 export interface ActionStore<S, G, M, A> {
@@ -69,15 +68,11 @@ export class Store<S, G, M, A, P> implements ActionStore<S, G, M, A> {
     return this._vm['state']
   }
 
-  private constructor(opt: Opt<S, G, M, A, P>) {
-    let state = State.create(opt._state)
+  /** @internal */ constructor(opt: Opt<S, G, M, A, P>) {
+    let state = new State(opt._state)
     installModules(this, opt, state)
     initVM(this, state)
     opt._plugins.concat(devtoolPlugin).forEach(p => p(this))
-  }
-
-  static create<S, G, M, A, P>(opt: Opt<S, G, M, A, P>) {
-    return new Store(opt)
   }
 
   subscribe(fn: Subscriber<P, S>): Unsubscription {
@@ -104,26 +99,13 @@ export class Store<S, G, M, A, P> implements ActionStore<S, G, M, A> {
 
 }
 
-
-let binded = false
-export function install (_Vue: typeof Vue) {
-  if (binded) {
-    console.error(
-      '[vuex] already installed. Vue.use(Vuex) should be called only once.'
-    )
-    return
-  }
-  applyMixin(Vue)
-  binded = true
-}
-
 type AnyOpt = Opt<{}, {}, {}, {}, {}>
 
 function installModules(store: AnyStore, opt: AnyOpt, state: State) {
   const modules = opt._modules
   for (let key of keysOf(modules)) {
     let moduleOpt = modules[key]
-    let subState = state.avtsModuleState[key] = State.create(moduleOpt._state)
+    let subState = state.avtsModuleState[key] = new State(moduleOpt._state)
     installModules(store, moduleOpt, subState)
   }
   registerGetters(store, opt._getters, state)
