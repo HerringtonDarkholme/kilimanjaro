@@ -1,5 +1,7 @@
-import {Subscriber, RawGetter, CommitOption} from './interface'
-import {WatchHandler, WatchOption} from '../watch'
+import {
+	Subscriber, RawGetter, CommitOption,
+	WatchHandler, WatchOption,
+} from './interface'
 import {Opt, RawActions, RawGetters, RawMutations} from './opt'
 import {State} from './state'
 import devtoolPlugin from './devtool'

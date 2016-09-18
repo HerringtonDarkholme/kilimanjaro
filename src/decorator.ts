@@ -1,6 +1,6 @@
 import Vue = require('vue')
-import {$$Prop} from '../interface'
-import {Component} from '../core'
+import {$$Prop} from 'av-ts/dist/src/interface'
+import {Component} from 'av-ts'
 
 const VUEX_PROP = '$$Vuex' as $$Prop
 

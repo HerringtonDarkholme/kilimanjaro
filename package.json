@@ -24,7 +24,8 @@
     "mocha": "^3.0.2",
     "typescript": "2.1.0-dev.20160915"
   },
-  "dependencies": {
-    "av-ts": "0.0.6"
+  "peerDependencies": {
+    "av-ts": "0.0.6",
+    "vue": "^2.0.0-rc.6"
   }
 }
