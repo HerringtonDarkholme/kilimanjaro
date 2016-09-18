@@ -28,7 +28,7 @@ interface Actions {
 
 export type AnyStore = Store<{}, {}, {}, {}, {}>
 
-const dispathImpl = (store: AnyStore) => (type: string) => (payload?: {}) => {
+const dispatchImpl = (store: AnyStore) => (type: string) => (payload?: {}) => {
   let handlers = store._actions[type]
   return Promise.all(handlers.map(h => h(payload))).catch(err => {
     store._devtoolHook.emit('vuex:error', err)
@@ -60,7 +60,7 @@ export class Store<S, G, M, A, P> implements ActionStore<S, G, M, A> {
 
   /** @internal */ _devtoolHook: any
 
-  readonly dispatch: A = dispathImpl(this) as any
+  readonly dispatch: A = dispatchImpl(this) as any
   readonly commit: M = commitImpl(this) as any
   readonly getters: G = getterImpl(this) as any
 
