@@ -61,9 +61,9 @@ export class Opt<S, G, M, A, P> {
     return this as any
   }
 
-  action<K extends string, T, R>(key: K, f: (s: ActionStore<S, G, M, A>) => F0<R|Promise<R>> & F1<T,R|Promise<R>>): Opt<S, G, M, ((k: K) => F01<T, Promise<R>>) & A,  P>
-  action<K extends string, T, R>(key: K, f: (s: ActionStore<S, G, M, A>) => F1<T,R|Promise<R>>): Opt<S, G, M, ((k: K) => F1<T, Promise<R>>) & A,  P>
-  action<K extends string, T, R>(key: K, f: (s: ActionStore<S, G, M, A>) => F01<T,R|Promise<R>>): Opt<S, G, M, ((k: K) => F01<T, Promise<R>>) & A,  P>
+  action<K extends string, T, R>(key: K, f: (s: ActionStore<S, G, M, A>) => F0<R|Promise<R>> & F1<T,R|Promise<R>>): Opt<S, G, M, ((k: K) => F01<T, Promise<R[]>>) & A,  P>
+  action<K extends string, T, R>(key: K, f: (s: ActionStore<S, G, M, A>) => F1<T,R|Promise<R>>): Opt<S, G, M, ((k: K) => F1<T, Promise<R[]>>) & A,  P>
+  action<K extends string, T, R>(key: K, f: (s: ActionStore<S, G, M, A>) => F01<T,R|Promise<R>>): Opt<S, G, M, ((k: K) => F01<T, Promise<R[]>>) & A,  P>
   {
     this._actions[key as string] = f
     return this as any
