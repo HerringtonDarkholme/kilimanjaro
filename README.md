@@ -49,7 +49,7 @@ var allCoffeeShop = create()
     // commit mutations defined in module
     store.commit('pay_check')()
     // dispatch returns a promise
-    store.dispatch('eat_sweet').then(() => console.log('done!'))
+    store.dispatch('eat_sweet')(2).then(() => console.log('done!'))
     // get sub state
     store.state.$('rabbitHouse')
   })
