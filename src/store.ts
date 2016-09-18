@@ -1,6 +1,6 @@
 import {
-	Subscriber, RawGetter, CommitOption,
-	WatchHandler, WatchOption,
+  Subscriber, RawGetter, CommitOption,
+  WatchHandler, WatchOption,
 } from './interface'
 import {Opt, RawActions, RawGetters, RawMutations} from './opt'
 import {State} from './state'
