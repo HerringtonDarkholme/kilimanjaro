@@ -102,6 +102,7 @@ export type BasePayload = Payload0<string, {}>
 export type BaseOpt = Opt<{}, BaseGetter, BaseCommit, BaseDispatch, BasePayload>
 export type BaseStore = Store<{}, BaseGetter, BaseCommit, BaseDispatch, BasePayload>
 export type BasePlugin = Plugin<BaseStore>
+export type BaseSubscriber = Subscriber<BasePayload, {}>
 
 
 // type level wizardry

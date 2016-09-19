@@ -1,10 +1,10 @@
 import {
-  Subscriber, VueGetter, CommitOption,
+  VueGetter, CommitOption,
   WatchHandler, WatchOption, Unsubscription,
-  ActionStore,
-  BaseStore, BaseGetter, BaseCommit, BaseAction, BasePayload,
+  BaseStore, BaseSubscriber,
+  MutationHandler0, F01,
 } from './interface'
-import {OptImpl, RawActions, RawGetters, RawMutations} from './opt'
+import {OptImpl, ActDefs, RawGetters, MutateDefs} from './opt'
 import {State} from './state'
 import devtoolPlugin from './devtool'
 import Vue = require('vue')
@@ -13,15 +13,15 @@ interface Getters {
   [k: string]: () => any
 }
 
-interface Mutations {
-  [k: string]: Array<(t?: any, o?: CommitOption) => void>
+interface MutationHandlers {
+  [k: string]: MutationHandler0<{}>[]
 }
 
-interface Actions {
-  [k: string]: Array<(t?: any) => void | {} | Promise<void | {}>>
+interface ActionHandlers {
+  [k: string]: F01<{}, {} | Promise<{}>>[]
 }
 
-const dispatchImpl = (store: BaseStore) => memoize((type: string) => (payload?: {}) => {
+const dispatchImpl = (store: StoreImpl) => memoize((type: string) => (payload?: {}) => {
   let handlers = store._actions[type]
   return Promise.all(handlers.map(h => h(payload))).catch(err => {
     store._devtoolHook && store._devtoolHook.emit('vuex:error', err)
@@ -29,7 +29,7 @@ const dispatchImpl = (store: BaseStore) => memoize((type: string) => (payload?: 
   })
 })
 
-const commitImpl = (store: BaseStore) => memoize((type: string) => (payload?: {}, opt?: CommitOption) => {
+const commitImpl = (store: StoreImpl) => memoize((type: string) => (payload?: {}, opt?: CommitOption) => {
   const mutation = {type, payload}
   let handlers = store._mutations[type]
   handlers.forEach(h => h(payload))
@@ -39,36 +39,37 @@ const commitImpl = (store: BaseStore) => memoize((type: string) => (payload?: {}
   }
 })
 
-const getterImpl = (store: BaseStore) => (key: string) => store._vm[key]
+const getterImpl = (store: StoreImpl) => (key: string) => store._vm[key]
 
+/** @internal */
 export class StoreImpl implements BaseStore {
 
-  /** @internal */ _vm: Vue
-  /** @internal */ _committing = false
+   _vm: Vue
+   _committing = false
 
-  /** @internal */ _getters: Getters = {}
-  /** @internal */ _mutations: Mutations = {}
-  /** @internal */ _actions: Actions = {}
-  /** @internal */ _subscribers: Subscriber<P, S>[] = []
+   _getters: Getters = {}
+   _mutations: MutationHandlers = {}
+   _actions: ActionHandlers = {}
+   _subscribers: BaseSubscriber[] = []
 
-  /** @internal */ _devtoolHook?: {emit: Function}
+   _devtoolHook?: {emit: Function}
 
-  readonly dispatch: A = dispatchImpl(this) as any
-  readonly commit: M = commitImpl(this) as any
-  readonly getters: G = getterImpl(this) as any
+  readonly dispatch = dispatchImpl(this)
+  readonly commit = commitImpl(this)
+  readonly getters = getterImpl(this)
 
-  get state(): S {
+  get state() {
     return this._vm['state']
   }
 
-  /** @internal */ constructor(opt: OptImpl<S, G, M, A, P>) {
+  /** @internal */ constructor(opt: OptImpl) {
     let state = new State(opt._state)
     installModules(this, opt, state)
     initVM(this, state)
     opt._plugins.concat(devtoolPlugin).forEach(p => p(this))
   }
 
-  subscribe(fn: Subscriber<P, S>): Unsubscription {
+  subscribe(fn: BaseSubscriber): Unsubscription {
     const subs = this._subscribers
     if (subs.indexOf(fn) < 0) {
       subs.push(fn)
@@ -82,19 +83,18 @@ export class StoreImpl implements BaseStore {
   }
 
   private _watcherVM = new Vue()
-  watch<R>(getter: VueGetter<S, R>, cb: WatchHandler<never, R>, options: WatchOption<never, R>): Function {
+  watch<R>(getter: VueGetter<{}, R>, cb: WatchHandler<never, R>, options: WatchOption<never, R>): Function {
     return this._watcherVM.$watch(() => getter(this.state), cb, options)
   }
 
-  replaceState(state: S): void {
+  replaceState(state: {}): void {
     recursiveAssign(this._vm['state'], state)
   }
 
 }
 
-type AnyOpt = OptImpl<{}, {}, {}, {}, {}>
 
-function installModules(store: BaseStore, opt: AnyOpt, state: State) {
+function installModules(store: StoreImpl, opt: OptImpl, state: State) {
   const modules = opt._modules
   for (let key of keysOf(modules)) {
     let moduleOpt = modules[key]
@@ -106,13 +106,13 @@ function installModules(store: BaseStore, opt: AnyOpt, state: State) {
   registerActions(store, opt._actions, state)
 }
 
-function registerGetters(store: BaseStore, getters: RawGetters<{}, {}>, state: State) {
+function registerGetters(store: StoreImpl, getters: RawGetters, state: State) {
   for (let key of keysOf(getters)) {
     store._getters[key] = () => getters[key](state, store.getters)
   }
 }
 
-function registerMutations(store: BaseStore, mutations: RawMutations<{}>, state: State) {
+function registerMutations(store: StoreImpl, mutations: MutateDefs, state: State) {
   const _mutations = store._mutations
   for (let key of keysOf(mutations)) {
     _mutations[key] = _mutations[key] || []
@@ -121,7 +121,7 @@ function registerMutations(store: BaseStore, mutations: RawMutations<{}>, state:
   }
 }
 
-function registerActions(store: BaseStore, actions: RawActions<{}, {}, {}, {}>, state: State) {
+function registerActions(store: StoreImpl, actions: ActDefs, state: State) {
   const _actions = store._actions
   for (let key of keysOf(actions)) {
     _actions[key] = _actions[key] || []
@@ -135,7 +135,7 @@ function registerActions(store: BaseStore, actions: RawActions<{}, {}, {}, {}>, 
   }
 }
 
-function initVM(store: BaseStore, state: State) {
+function initVM(store: StoreImpl, state: State) {
   // feed getters to vm as getters
   // this enable lazy-caching
   const silent = Vue.config.silent

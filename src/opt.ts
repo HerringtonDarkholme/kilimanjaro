@@ -6,17 +6,20 @@ import {
 import {StoreImpl} from './store'
 
 type BaseActDef = ActDef0<{}, BaseGetter, BaseCommit, BaseDispatch, {}, {}>
-interface ActDefs {
+/** @internal */
+export interface ActDefs {
   [k: string]: BaseActDef
 }
 
 type BaseMutateDef = MutateDef0<{}, {}>
-interface MutateDefs {
+/** @internal */
+export interface MutateDefs {
   [k: string]: BaseMutateDef
 }
 
 type BaseRawGetter = GetDef<{}, BaseGetter, {}>
-interface RawGetters {
+/** @internal */
+export interface RawGetters {
   [k: string]: BaseRawGetter
 }
 

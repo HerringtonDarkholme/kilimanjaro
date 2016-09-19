@@ -1,11 +1,12 @@
-import { AnyStore} from './store'
+import { StoreImpl } from './store'
 
 type _ = {}
 const devtoolHook =
   typeof window !== 'undefined' &&
   window.__VUE_DEVTOOLS_GLOBAL_HOOK__
 
-export default function devtoolPlugin(store: AnyStore) {
+/** @internal */
+export default function devtoolPlugin(store: StoreImpl) {
   if (!devtoolHook) return
 
   store._devtoolHook = devtoolHook
