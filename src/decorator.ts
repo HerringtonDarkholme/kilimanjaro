@@ -2,7 +2,7 @@ import Vue = require('vue')
 import {$$Prop} from 'av-ts/dist/src/interface'
 import {Component} from 'av-ts'
 import {
-  Store, BaseGetter, BaseCommit, BaseDispatch, BasePayload,
+  Store, BaseGetters, BaseCommit, BaseDispatch, BasePayload,
 } from './interface'
 import {StoreImpl} from './store'
 
@@ -26,7 +26,7 @@ export function Vuex(target: Vue, key: string): void {
 // at runtime, helper.getters(key) return a function that return value T
 // so @Vuex getter = getters(key) will resolve to T at type level
 // while on value level vuex decorator can wrap it in vue's `computed` field
-export function getHelper<G extends BaseGetter, C extends BaseCommit, D extends BaseDispatch>(store: Store<{}, G, C, D, BasePayload>): Helper<G, C, D> {
+export function getHelper<G extends BaseGetters, C extends BaseCommit, D extends BaseDispatch>(store: Store<{}, G, C, D, BasePayload>): Helper<G, C, D> {
   const impl: StoreImpl = store as any
   return ({
     getters(k: string) {
