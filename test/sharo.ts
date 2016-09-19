@@ -47,6 +47,15 @@ var allCoffeeShop = create()
     // get sub state
     store.state.$('rabbitHouse')
   })
+  .plugin(s => {
+    s.subscribe(cmt => {
+      switch (cmt.type) {
+        case 'eat_sweet':
+          cmt.payload == 123
+          break
+      }
+    })
+  })
   .done()
 
 var commit = allCoffeeShop.commit
