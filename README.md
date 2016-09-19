@@ -36,7 +36,7 @@ var sweetRabbitCafe = create({
   .getter('remainingAnko', state => state.ankoAmount - state.matchaAmount)
   .mutation('eat_sweet', state => n => state.ankoAmount -= n)
   .action('order_anko', store => n => {
-    if (!store.getters('remainingAnko') < n) return console.log('no enough anko!')
+    if (store.getters('remainingAnko') < n) return console.log('no enough anko!')
     store.commit('eat_sweet')(n) // commit payload
   })
 

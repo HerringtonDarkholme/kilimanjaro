@@ -1,57 +1,94 @@
 import {create} from '../src/opt'
 
-var a = create({test: 123})
-  .action("test", s => () => s.dispatch)
-  .action("test1", s => (k: string) => {})
-  // .action("test2", s => (k: string, h: number) => s.dispatch)
-  .mutation('addNewProduct', s => () => s.test += 1)
-
-var b = create({myString: '333'})
-.mutation('increment', s => () => s.myString += 1)
-.mutation('decrement', s => (k?: number) => s.myString += 1)
-.mutation('nothing', s => (k: number) => s.myString += 1)
-.mutation('default', s => (k = 123) => s.myString += k)
-// .mutation('decrement', s => (k: number, h: string) => s.myString += 1)
-
-
-var c = create()
-  .module("a", a)
-  .module("b", b)
-  .getter('mytest', s => {
-    return s.$('b')
+var rabbitHouse = create({
+    cappuccino: 'coffee',
+    hotCocoa: 'drink',
+    'Thé des Alizés': 'tea',
+    order: 0,
   })
-  .action('INCREMENT', s => (a?: string) => {
+  .getter('coffee', state => state.cappuccino)
+  .mutation('pay_check0', state => () => state.order += 1)
+  .mutation('pay_check', state => (n?: number) => state.order += 1)
+  .mutation('pay_check1', state => (n: number) => state.order += 1)
+  .mutation('pay_check2', state => (n = 2) => state.order += 1)
+  .action('order', store => (kind?: string) => {
+    if (kind === 'tea') console.log('ordered tea!')
+    store.commit('pay_check')() // just call thunk for mutation without payload
   })
 
+var sweetRabbitCafe = create({
+    matcha: 'tea',
+    anko: 'sweets',
+    kilimanjaro: 'coffee',
+    ankoAmount: 10,
+    matchaAmount: 5,
+  })
+  // we need leave enough anko for matcha dessert!
+  .getter('remainingAnko', state => state.ankoAmount - state.matchaAmount)
+  .mutation('eat_sweet', state => (n: number) => state.ankoAmount -= n)
+  .action('order_anko', store => (n: number) => {
+    if (store.getters('remainingAnko') < n) return console.log('no enough anko!')
+    store.commit('eat_sweet')(n) // commit payload
+  })
+  .action('order0', store => () => {})
+  .action('order1', store => (kind: string) => {})
+  .action('order2', store => (kind = 'coffee') => {})
 
-var commit = c.done().commit
-var dispatch = c.done().dispatch
+var allCoffeeShop = create()
+  .module('rabbitHouse', rabbitHouse)
+  .module('sweetRabbitCafe', sweetRabbitCafe)
+  .action('order a rabbit', store => () => {
+    // get all coffee from module
+    store.getters('coffee')
+    // commit mutations defined in module
+    store.commit('pay_check')()
+    // dispatch returns a promise
+    store.dispatch('order_anko')(2).then(() => console.log('done!'))
+    // get sub state
+    store.state.$('rabbitHouse')
+  })
+  .done()
 
-var decrement = commit('decrement')
-var increment = commit('increment')
-var nothing = commit('nothing')
-var dft = commit('default')
+var commit = allCoffeeShop.commit
+var dispatch = allCoffeeShop.dispatch
 
-var disp1 = dispatch('INCREMENT')
-var disp2 = dispatch('test')
-var disp3 = dispatch('test1')
+var payCheck = commit('pay_check')
+var payCheck0 = commit('pay_check0')
+var payCheck1 = commit('pay_check1')
+var payCheck2 = commit('pay_check2')
+
+var order = dispatch('order')
+var order0 = dispatch('order0')
+var order1 = dispatch('order1')
+var order2 = dispatch('order2')
 
 //should compile
-decrement(undefined, {silent: true})
-decrement(123)
-dft()
-dft(222)
-increment()
-nothing(123)
-disp1('1231')
-disp2()
-disp3('1123')
+payCheck(undefined, {silent: true})
+payCheck(123)
+payCheck(123, {silent: false})
+payCheck0()
+payCheck0(undefined, {silent: true})
+payCheck1(123)
+payCheck2()
+payCheck2(123)
 
+order('string')
+order()
+order0()
+order1('123')
+order2()
+order2('123')
 
 // should not compile
-increment(123)
-// decrement('123')
-// nothing()
-// nothing('123')
-// nothing({silent: true})
-// disp3()
+payCheck0(123)
+// payCheck('123')
+// payCheck({silent: true})
+// payCheck1()
+// payCheck1('123')
+// payCheck2('123')
+
+order0('ss')
+// order(123)
+// order1()
+// order1(123)
+// order2(123)
