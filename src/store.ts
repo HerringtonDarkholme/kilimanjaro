@@ -1,5 +1,5 @@
 import {
-  Subscriber, RawGetter, CommitOption,
+  Subscriber, VueGetter, CommitOption,
   WatchHandler, WatchOption, Unsubscription,
   ActionStore,
 } from './interface'
@@ -83,7 +83,7 @@ export class Store<S, G, M, A, P> implements ActionStore<S, G, M, A> {
   }
 
   private _watcherVM = new Vue()
-  watch<R>(getter: RawGetter<S, R>, cb: WatchHandler<never, R>, options: WatchOption<never, R>): Function {
+  watch<R>(getter: VueGetter<S, R>, cb: WatchHandler<never, R>, options: WatchOption<never, R>): Function {
     return this._watcherVM.$watch(() => getter(this.state), cb, options)
   }
 

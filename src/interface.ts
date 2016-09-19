@@ -2,7 +2,7 @@ export interface Subscriber<P, S> {
   (mutation: P, state: S): void
 }
 
-export interface RawGetter<S, R> {
+export interface VueGetter<S, R> {
   (s: S): R
 }
 
@@ -34,24 +34,70 @@ export type Plugin<S, G, M, A, P> = (s: Store<S, G, M, A, P>) => void
 
 import {Store} from './store'
 
-export interface Getter {
-  (k: string): any
+
+export interface RawGetter<S, G extends Getter<string, {}>, T> {
+  (s: S, g: G): T
 }
 
-export interface Mutation {
-  (k: string): (t?: any, opt?: CommitOption) => void
+export interface Getter<K, T> {
+  (k: K): T
 }
 
-export interface Opt<S, G extends Getter, M extends Mutation, A, P> {
-  getter<K extends string, T>(key: K, f: (s: S, g: G) => T): Opt<S, ((k: K) => T) & G, M, A, P>
+export interface RawMutation0<S, T> {
+  (s: S): F0<void> & F01<T, void>
+}
+export interface RawMutation1<S, T> {
+  (s: S): F1<T, void>
+}
+export interface Mutation0<K, T> {
+  (k: K): (this: void, t?: T, opt?: CommitOption) => void
+}
+export interface Mutation1<K, T> {
+  (k: K): (this: void, t: T, opt?: CommitOption) => void
+}
 
-  mutation<K extends string, T>(key: K, f: (s: S) => F0<void> & F01<T, void>): Opt<S, G, ((k: K) => (t?: T, opt?: CommitOption) => void) & M, A, {type: K, payload?: T} | P>
-  mutation<K extends string, T>(key: K, f: (s: S) => F1<T, void>): Opt<S, G, ((k: K) => (t: T, opt?: CommitOption) => void) & M, A, {type: K, payload: T} | P>
+export interface RawAction0<S, G, M, A, T, R> {
+  (s: ActionStore<S, G, M, A>): F0<Promise<R> | R> & F1<T, Promise<R>|R>
+}
+export interface RawAction1<S, G, M, A, T, R> {
+  (s: ActionStore<S, G, M, A>): F1<T, Promise<R> | R>
+}
+export interface Action0<K, T, R> {
+  (k: K): F01<T, Promise<R[]>>
+}
+export interface Action1<K, T, R> {
+  (k: K): F1<T, Promise<R[]>>
+}
 
-  action<K extends string, T, R>(key: K, f: (s: ActionStore<S, G, M, A>) => F0<R|Promise<R>> & F1<T,R|Promise<R>>): Opt<S, G, M, ((k: K) => F01<T, Promise<R[]>>) & A,  P>
-  action<K extends string, T, R>(key: K, f: (s: ActionStore<S, G, M, A>) => F1<T,R|Promise<R>>): Opt<S, G, M, ((k: K) => F1<T, Promise<R[]>>) & A,  P>
+export interface Payload0<K, T> {
+  type: K
+  payload?: T
+}
+export interface Payload1<K, T> {
+  type: K
+  payload: T
+}
 
-  module<K extends string, S1, G1 extends Getter, M1 extends Mutation, A1, P1>(key: K, o: Opt<S1, G1, M1, A1, P1>): Opt<S & {readonly $: (k: K) => S1}, G1 & G, M1 & M, A1 & A, P1 | P>
+export interface ModuleState<K, S> {
+  readonly $: (k: K) => S
+}
+
+export type BaseGetter = Getter<string, {}>
+export type BaseMutation = Mutation0<string, {}>
+export type BaseAction = Action0<string, {}|undefined, {}|void>
+export type BasePayload = Payload0<string, {}>
+export type BaseStore = Store<{}, BaseGetter, BaseMutation, BaseAction, BasePayload>
+
+export interface Opt<S, G extends BaseGetter, M extends BaseMutation, A extends BaseAction, P extends BasePayload> {
+  getter<K extends string, T>(key: K, f: RawGetter<S, G, T>): Opt<S, Getter<K, T> & G, M, A, P>
+
+  mutation<K extends string, T>(key: K, f: RawMutation0<S, T>): Opt<S, G, Mutation0<K, T> & M, A, Payload0<K, T> | P>
+  mutation<K extends string, T>(key: K, f: RawMutation1<S, T>): Opt<S, G, Mutation1<K, T> & M, A, Payload1<K, T> | P>
+
+  action<K extends string, T, R>(key: K, f: RawAction0<S, G, M, A, T, R>): Opt<S, G, M, Action0<K, T, R> & A,  P>
+  action<K extends string, T, R>(key: K, f: RawAction1<S, G, M, A, T, R>): Opt<S, G, M, Action1<K, T, R> & A,  P>
+
+  module<K extends string, S1, G1 extends BaseGetter, M1 extends BaseMutation, A1 extends BaseAction, P1 extends BasePayload>(key: K, o: Opt<S1, G1, M1, A1, P1>): Opt<S & ModuleState<K, S1>, G1 & G, M1 & M, A1 & A, P1 | P>
 
   plugin(...plugins: Plugin<S, G, M, A, P>[]): this
   done(): Store<S, G, M, A, P>

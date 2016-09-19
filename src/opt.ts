@@ -1,5 +1,5 @@
 import {Store} from './store'
-import {CommitOption, ActionStore} from './interface'
+import {CommitOption, ActionStore, Plugin, Opt} from './interface'
 
 export type F0<R> = (this: void) => R
 export type F01<T, R> = (this: void, t?: T) => R
@@ -33,7 +33,6 @@ export interface Modules {
   [k: string]: OptImpl<{}, {}, {}, {}, {}>
 }
 
-export type Plugin<S, G, M, A, P> = (s: Store<S, G, M, A, P>) => void
 
 export class OptImpl<S, G, M, A, P> {
 
@@ -84,9 +83,9 @@ export class OptImpl<S, G, M, A, P> {
   }
 }
 
-export function create(): OptImpl<never, never, never, never, never>
-export function create<S>(s: S): OptImpl<S, never, never, never, never>
-export function create<S>(s?: S): OptImpl<S, never, never, never, never> {
+export function create(): Opt<never, never, never, never, never>
+export function create<S>(s: S): Opt<S, never, never, never, never>
+export function create<S>(s?: S): Opt<S, never, never, never, never> {
   if (!s) s = {} as any
   return new OptImpl(s) as any
 }
