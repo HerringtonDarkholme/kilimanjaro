@@ -3,6 +3,7 @@ import * as chai from 'chai'
 import {expect} from 'chai'
 import * as sinonChai from 'sinon-chai'
 import * as sinon from 'sinon'
+import * as Vue from 'vue'
 chai.use(sinonChai)
 
 const TEST = 'TEST'
@@ -237,6 +238,81 @@ describe('Kilimanjaro', () => {
       expect(r[0]).to.equal(1)
       expect(r[1]).to.equal(2)
       done()
+    })
+  })
+
+  it('plugins', () => {
+    let initState: any
+    const mutations: any[] = []
+    const store = create({a: 1})
+      .mutation(TEST, s => (n: number) => s.a += n)
+      .plugin(store => {
+        initState = store.state
+        store.subscribe((mut, state) => {
+          expect(state).to.equal(store.state)
+          mutations.push(mut)
+        })
+      })
+      .done()
+    expect(initState).to.equal(store.state)
+    store.commit(TEST)(2)
+    expect(mutations.length).to.equal(1)
+    expect(mutations[0].type).to.equal(TEST)
+    expect(mutations[0].payload).to.equal(2)
+  })
+
+  it('plugin ignore silent mutation', () => {
+    const mutations: any[] = []
+    const store = create({a: 1})
+      .mutation(TEST, s => (n: number) => s.a += n)
+      .plugin(store => {
+        store.subscribe((mut, state) => {
+          expect(state).to.equal(store.state)
+          mutations.push(mut)
+        })
+      })
+      .done()
+    store.commit(TEST)(2)
+    store.commit(TEST)(2, {silent: true})
+    expect(mutations.length).to.equal(1)
+    expect(mutations[0].type).to.equal(TEST)
+    expect(mutations[0].payload).to.equal(2)
+    expect(store.state.a).to.equal(5)
+  })
+
+  it('watch change in vue', done => {
+    const store = create({a: 1})
+      .mutation(TEST, s => () => s.a += 1)
+      .module('nested', create({a: 2})
+        .mutation('inner', s => () => s.a += 1))
+      .done()
+
+    let test = 0
+    let nested = 0
+    let calls = 0
+    store.watch(s => s.a, (n, o) => {
+      test = n
+      calls++
+    })
+    store.watch(s => s.$('nested').a, (n, o) => {
+      nested = n
+      calls++
+    })
+    expect(test).to.equal(0)
+    expect(nested).to.equal(0)
+    expect(calls).to.equal(0)
+    store.commit(TEST)()
+    Vue.nextTick(() => {
+      expect(test).to.equal(2)
+      expect(nested).to.equal(0)
+      expect(calls).to.equal(1)
+      store.commit('inner')()
+      Vue.nextTick(() => {
+        expect(test).to.equal(2)
+        expect(nested).to.equal(3)
+        expect(calls).to.equal(2)
+        done()
+      })
     })
   })
 

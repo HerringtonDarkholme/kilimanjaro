@@ -17,7 +17,7 @@ export interface CommitOption {
   silent?: boolean
 }
 
-export type WatchHandler<C, T> = (this: C, newVal?: T, oldVal?: T) => void
+export type WatchHandler<C, T> = (this: C, newVal: T, oldVal: T) => void
 export interface WatchOption<C, T>{
   deep?: boolean
   immediate?: boolean
@@ -128,6 +128,6 @@ export interface Store<S, G extends BaseGetters, C extends BaseCommit, D extends
   readonly dispatch: D
 
   subscribe(fn: Subscriber<P, S>): Unsubscription
-  watch<R>(getter: VueGetter<S, R>, cb: WatchHandler<never, R>, options: WatchOption<never, R>): Function
+  watch<R>(getter: VueGetter<S, R>, cb: WatchHandler<never, R>, options?: WatchOption<never, R>): Function
   replaceState(state: S): void
 }

@@ -45,7 +45,6 @@ const getterImpl = (store: StoreImpl) => (key: string) => store._vm[key]
 export class StoreImpl implements BaseStore {
 
    _vm: Vue
-   _committing = false
 
    _getters: Getters = {}
    _mutations: MutationHandlers = {}
