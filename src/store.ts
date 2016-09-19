@@ -139,17 +139,11 @@ function registerActions(store: AnyStore, actions: RawActions<{}, {}, {}, {}>, s
 function initVM(store: AnyStore, state: State) {
   // feed getters to vm as getters
   // this enable lazy-caching
-  let computed = {}
-  let wrappedGetters = store._getters
-  for (let key of keysOf(wrappedGetters)) {
-    computed[key] = wrappedGetters[key]
-  }
-
   const silent = Vue.config.silent
   Vue.config.silent = false
   store._vm = new Vue({
     data: {state},
-    computed: computed,
+    computed: store._getters,
   })
   Vue.config.silent = silent
 
