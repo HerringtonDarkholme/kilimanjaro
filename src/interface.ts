@@ -28,11 +28,11 @@ export type Unsubscription = () => void
 
 
 // vuex's API
-export interface ActionStore<S, G, M, A> {
-  readonly dispatch: A
-  readonly commit: M
-  readonly getters: G
+export interface ActionStore<S, G, C, D> {
   readonly state: S
+  readonly getters: G
+  readonly commit: C
+  readonly dispatch: D
 }
 
 export interface RawGetter<S, G extends Getter<string, {}>, T> {
@@ -48,23 +48,23 @@ export interface RawMutation0<S, T> {
 export interface RawMutation1<S, T> {
   (s: S): F1<T, void>
 }
-export interface Mutation0<K, T> {
+export interface Commit0<K, T> {
   (k: K): (this: void, t?: T, opt?: CommitOption) => void
 }
-export interface Mutation1<K, T> {
+export interface Commit1<K, T> {
   (k: K): (this: void, t: T, opt?: CommitOption) => void
 }
 
-export interface RawAction0<S, G, M, A, T, R> {
-  (s: ActionStore<S, G, M, A>): F0<Promise<R> | R> & F1<T, Promise<R>|R>
+export interface RawAction0<S, G, C, D, T, R> {
+  (s: ActionStore<S, G, C, D>): F0<Promise<R> | R> & F1<T, Promise<R>|R>
 }
-export interface RawAction1<S, G, M, A, T, R> {
-  (s: ActionStore<S, G, M, A>): F1<T, Promise<R> | R>
+export interface RawAction1<S, G, C, D, T, R> {
+  (s: ActionStore<S, G, C, D>): F1<T, Promise<R> | R>
 }
-export interface Action0<K, T, R> {
+export interface Dispatch0<K, T, R> {
   (k: K): F01<T, Promise<R[]>>
 }
-export interface Action1<K, T, R> {
+export interface Dispatch1<K, T, R> {
   (k: K): F1<T, Promise<R[]>>
 }
 
@@ -88,31 +88,31 @@ export interface Plugin<Str extends BaseStore> {
 
 // type bound and implementation type
 export type BaseGetter = Getter<string, {}>
-export type BaseMutation = Mutation0<string, {}>
-export type BaseAction = Action0<string, {}|undefined, {}|void>
+export type BaseCommit = Commit0<string, {}>
+export type BaseAction = Dispatch0<string, {}|undefined, {}|void>
 export type BasePayload = Payload0<string, {}>
-export type BaseOpt = Opt<{}, BaseGetter, BaseMutation, BaseAction, BasePayload>
-export type BaseStore = Store<{}, BaseGetter, BaseMutation, BaseAction, BasePayload>
+export type BaseOpt = Opt<{}, BaseGetter, BaseCommit, BaseAction, BasePayload>
+export type BaseStore = Store<{}, BaseGetter, BaseCommit, BaseAction, BasePayload>
 export type BasePlugin = Plugin<BaseStore>
 
 
 // type level wizardry
-export interface Opt<S, G extends BaseGetter, M extends BaseMutation, A extends BaseAction, P extends BasePayload> {
+export interface Opt<S, G extends BaseGetter, M extends BaseCommit, A extends BaseAction, P extends BasePayload> {
   getter<K extends string, T>(key: K, f: RawGetter<S, G, T>): Opt<S, Getter<K, T> & G, M, A, P>
 
-  mutation<K extends string, T>(key: K, f: RawMutation0<S, T>): Opt<S, G, Mutation0<K, T> & M, A, Payload0<K, T> | P>
-  mutation<K extends string, T>(key: K, f: RawMutation1<S, T>): Opt<S, G, Mutation1<K, T> & M, A, Payload1<K, T> | P>
+  mutation<K extends string, T>(key: K, f: RawMutation0<S, T>): Opt<S, G, Commit0<K, T> & M, A, Payload0<K, T> | P>
+  mutation<K extends string, T>(key: K, f: RawMutation1<S, T>): Opt<S, G, Commit1<K, T> & M, A, Payload1<K, T> | P>
 
-  action<K extends string, T, R>(key: K, f: RawAction0<S, G, M, A, T, R>): Opt<S, G, M, Action0<K, T, R> & A,  P>
-  action<K extends string, T, R>(key: K, f: RawAction1<S, G, M, A, T, R>): Opt<S, G, M, Action1<K, T, R> & A,  P>
+  action<K extends string, T, R>(key: K, f: RawAction0<S, G, M, A, T, R>): Opt<S, G, M, Dispatch0<K, T, R> & A,  P>
+  action<K extends string, T, R>(key: K, f: RawAction1<S, G, M, A, T, R>): Opt<S, G, M, Dispatch1<K, T, R> & A,  P>
 
-  module<K extends string, S1, G1 extends BaseGetter, M1 extends BaseMutation, A1 extends BaseAction, P1 extends BasePayload>(key: K, o: Opt<S1, G1, M1, A1, P1>): Opt<S & ModuleState<K, S1>, G1 & G, M1 & M, A1 & A, P1 | P>
+  module<K extends string, S1, G1 extends BaseGetter, M1 extends BaseCommit, A1 extends BaseAction, P1 extends BasePayload>(key: K, o: Opt<S1, G1, M1, A1, P1>): Opt<S & ModuleState<K, S1>, G1 & G, M1 & M, A1 & A, P1 | P>
 
   plugin(...plugins: Plugin<Store<S, G, M, A, P>>[]): this
   done(): Store<S, G, M, A, P>
 }
 
-export interface Store<S, G extends BaseGetter, M extends BaseMutation, A extends BaseAction, P extends BasePayload> {
+export interface Store<S, G extends BaseGetter, M extends BaseCommit, A extends BaseAction, P extends BasePayload> {
   readonly state: S
   readonly getters: G
   readonly commit: M

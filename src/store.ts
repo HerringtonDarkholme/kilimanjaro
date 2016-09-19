@@ -2,7 +2,7 @@ import {
   Subscriber, VueGetter, CommitOption,
   WatchHandler, WatchOption, Unsubscription,
   ActionStore,
-  BaseStore, BaseGetter, BaseMutation, BaseAction, BasePayload,
+  BaseStore, BaseGetter, BaseCommit, BaseAction, BasePayload,
 } from './interface'
 import {OptImpl, RawActions, RawGetters, RawMutations} from './opt'
 import {State} from './state'
@@ -41,7 +41,7 @@ const commitImpl = (store: BaseStore) => memoize((type: string) => (payload?: {}
 
 const getterImpl = (store: BaseStore) => (key: string) => store._vm[key]
 
-export class StoreImpl<S, G extends BaseGetter, M extends BaseMutation, A extends BaseAction, P extends BasePayload> implements ActionStore<S, G, M, A> {
+export class StoreImpl implements BaseStore {
 
   /** @internal */ _vm: Vue
   /** @internal */ _committing = false

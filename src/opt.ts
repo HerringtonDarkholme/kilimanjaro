@@ -1,11 +1,11 @@
 import {
   Opt, BaseOpt,
-  BaseGetter, BaseMutation, BaseAction, BasePlugin,
+  BaseGetter, BaseCommit, BaseAction, BasePlugin,
   RawGetter, RawMutation0, RawAction0,
 } from './interface'
 import {StoreImpl} from './store'
 
-type BaseRawAction = RawAction0<{}, BaseGetter, BaseMutation, BaseAction, {}, {}>
+type BaseRawAction = RawAction0<{}, BaseGetter, BaseCommit, BaseAction, {}, {}>
 interface RawActions {
   [k: string]: BaseRawAction
 }
@@ -70,6 +70,6 @@ export class OptImpl implements BaseOpt {
 
 export function create(): Opt<never, never, never, never, never>
 export function create<S>(s: S): Opt<S, never, never, never, never>
-export function create(s = {}) {
+export function create(s = {}): BaseOpt {
   return new OptImpl(s)
 }
