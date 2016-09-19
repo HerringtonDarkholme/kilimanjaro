@@ -3,7 +3,7 @@ import {
   WatchHandler, WatchOption, Unsubscription,
   ActionStore,
 } from './interface'
-import {Opt, RawActions, RawGetters, RawMutations} from './opt'
+import {OptImpl, RawActions, RawGetters, RawMutations} from './opt'
 import {State} from './state'
 import devtoolPlugin from './devtool'
 import Vue = require('vue')
@@ -62,7 +62,7 @@ export class Store<S, G, M, A, P> implements ActionStore<S, G, M, A> {
     return this._vm['state']
   }
 
-  /** @internal */ constructor(opt: Opt<S, G, M, A, P>) {
+  /** @internal */ constructor(opt: OptImpl<S, G, M, A, P>) {
     let state = new State(opt._state)
     installModules(this, opt, state)
     initVM(this, state)
@@ -93,7 +93,7 @@ export class Store<S, G, M, A, P> implements ActionStore<S, G, M, A> {
 
 }
 
-type AnyOpt = Opt<{}, {}, {}, {}, {}>
+type AnyOpt = OptImpl<{}, {}, {}, {}, {}>
 
 function installModules(store: AnyStore, opt: AnyOpt, state: State) {
   const modules = opt._modules
