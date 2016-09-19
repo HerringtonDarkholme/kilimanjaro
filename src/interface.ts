@@ -1,3 +1,10 @@
+// utility
+export type F0<R> = (this: void) => R
+export type F01<T, R> = (this: void, t?: T) => R
+export type F1<A, R> = (this: void, a: A) => R
+
+
+// vue related types
 export interface Subscriber<P, S> {
   (mutation: P, state: S): void
 }
@@ -11,7 +18,6 @@ export interface CommitOption {
 }
 
 export type WatchHandler<C, T> = (this: C, newVal?: any, oldVal?: any) => void
-
 export interface WatchOption<C, T>{
   deep?: boolean
   immediate?: boolean
@@ -20,6 +26,8 @@ export interface WatchOption<C, T>{
 
 export type Unsubscription = () => void
 
+
+// vuex's API
 export interface ActionStore<S, G, M, A> {
   readonly dispatch: A
   readonly commit: M
@@ -27,19 +35,9 @@ export interface ActionStore<S, G, M, A> {
   readonly state: S
 }
 
-export type F0<R> = (this: void) => R
-export type F01<T, R> = (this: void, t?: T) => R
-export type F1<A, R> = (this: void, a: A) => R
-
-export interface Plugin<S, G extends BaseGetter, M extends BaseMutation, A extends BaseAction, P extends BasePayload> {
-  (s: Store<S, G, M, A, P>): void
-}
-
-
 export interface RawGetter<S, G extends Getter<string, {}>, T> {
   (s: S, g: G): T
 }
-
 export interface Getter<K, T> {
   (k: K): T
 }
@@ -83,12 +81,20 @@ export interface ModuleState<K, S> {
   readonly $: (k: K) => S
 }
 
+export interface Plugin<S, G extends BaseGetter, M extends BaseMutation, A extends BaseAction, P extends BasePayload> {
+  (s: Store<S, G, M, A, P>): void
+}
+
+
+// type bound and implementation type
 export type BaseGetter = Getter<string, {}>
 export type BaseMutation = Mutation0<string, {}>
 export type BaseAction = Action0<string, {}|undefined, {}|void>
 export type BasePayload = Payload0<string, {}>
 export type BaseStore = Store<{}, BaseGetter, BaseMutation, BaseAction, BasePayload>
 
+
+// type level wizardry
 export interface Opt<S, G extends BaseGetter, M extends BaseMutation, A extends BaseAction, P extends BasePayload> {
   getter<K extends string, T>(key: K, f: RawGetter<S, G, T>): Opt<S, Getter<K, T> & G, M, A, P>
 
