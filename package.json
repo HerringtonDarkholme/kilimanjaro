@@ -20,8 +20,11 @@
   "devDependencies": {
     "@types/chai": "^3.4.32",
     "@types/mocha": "^2.2.31",
+    "@types/sinon-chai": "^2.7.26",
     "chai": "^3.5.0",
     "mocha": "^3.0.2",
+    "sinon": "^1.17.5",
+    "sinon-chai": "^2.8.0",
     "typescript": "2.1.0-dev.20160915"
   },
   "peerDependencies": {

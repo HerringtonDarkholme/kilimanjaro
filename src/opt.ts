@@ -30,12 +30,12 @@ interface Modules {
 /** @internal */
 export class OptImpl implements BaseOpt {
 
-  /** @internal */ _state: {}
-  /** @internal */ _getters: RawGetters = {}
-  /** @internal */ _actions: ActDefs = {}
-  /** @internal */ _mutations: MutateDefs = {}
-  /** @internal */ _modules: Modules = {}
-  /** @internal */ _plugins: BasePlugin[]
+  _state: {}
+  _getters: RawGetters = {}
+  _actions: ActDefs = {}
+  _mutations: MutateDefs = {}
+  _modules: Modules = {}
+  _plugins: BasePlugin[] = []
 
   constructor(s: {}) {
     this._state = s

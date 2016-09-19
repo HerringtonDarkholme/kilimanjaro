@@ -11,7 +11,7 @@ const VUEX_PROP = '$$Vuex' as $$Prop
 const GetterKey = '__isgetter'
 
 export interface Helper<G, C, D> {
-  getter: G
+  getters: G
   commit: C
   dispatch: D
 }
