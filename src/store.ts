@@ -25,7 +25,7 @@ export type AnyStore = Store<{}, {}, {}, {}, {}>
 const dispatchImpl = (store: AnyStore) => memoize((type: string) => (payload?: {}) => {
   let handlers = store._actions[type]
   return Promise.all(handlers.map(h => h(payload))).catch(err => {
-    store._devtoolHook.emit('vuex:error', err)
+    store._devtoolHook && store._devtoolHook.emit('vuex:error', err)
     throw err
   })
 })
@@ -52,7 +52,7 @@ export class Store<S, G, M, A, P> implements ActionStore<S, G, M, A> {
   /** @internal */ _actions: Actions = {}
   /** @internal */ _subscribers: Subscriber<P, S>[] = []
 
-  /** @internal */ _devtoolHook: any
+  /** @internal */ _devtoolHook?: {emit: Function}
 
   readonly dispatch: A = dispatchImpl(this) as any
   readonly commit: M = commitImpl(this) as any
