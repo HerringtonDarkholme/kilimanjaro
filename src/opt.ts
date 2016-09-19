@@ -1,21 +1,21 @@
 import {
   Opt, BaseOpt,
-  BaseGetter, BaseCommit, BaseAction, BasePlugin,
-  RawGetter, RawMutation0, RawAction0,
+  BaseGetter, BaseCommit, BaseDispatch, BasePlugin,
+  GetDef, MutateDef0, ActDef0,
 } from './interface'
 import {StoreImpl} from './store'
 
-type BaseRawAction = RawAction0<{}, BaseGetter, BaseCommit, BaseAction, {}, {}>
+type BaseRawAction = ActDef0<{}, BaseGetter, BaseCommit, BaseDispatch, {}, {}>
 interface RawActions {
   [k: string]: BaseRawAction
 }
 
-type BaseRawMutation = RawMutation0<{}, {}>
+type BaseRawMutation = MutateDef0<{}, {}>
 interface RawMutations {
   [k: string]: BaseRawMutation
 }
 
-type BaseRawGetter = RawGetter<{}, BaseGetter, {}>
+type BaseRawGetter = GetDef<{}, BaseGetter, {}>
 interface RawGetters {
   [k: string]: BaseRawGetter
 }
@@ -38,7 +38,7 @@ export class OptImpl implements BaseOpt {
     this._state = s
   }
 
-  getter(key: string, f: RawGetter<string, BaseGetter, {}>) {
+  getter(key: string, f: GetDef<string, BaseGetter, {}>) {
     this._getters[key] = f
     return this
   }
