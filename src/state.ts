@@ -1,13 +1,13 @@
 export class State {
   /** @internal */ avtsModuleState = {}
 
-  constructor(s: any) {
+  constructor(s: {}) {
     for (let key of Object.keys(s)) {
       this[key] = s[key]
     }
   }
 
-  $(key: string): any {
+  $(key: string): {} {
     return this.avtsModuleState[key]
   }
 }

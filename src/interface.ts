@@ -17,7 +17,7 @@ export interface CommitOption {
   silent?: boolean
 }
 
-export type WatchHandler<C, T> = (this: C, newVal?: any, oldVal?: any) => void
+export type WatchHandler<C, T> = (this: C, newVal?: T, oldVal?: T) => void
 export interface WatchOption<C, T>{
   deep?: boolean
   immediate?: boolean

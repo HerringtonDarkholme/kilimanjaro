@@ -10,7 +10,7 @@ import devtoolPlugin from './devtool'
 import Vue = require('vue')
 
 interface Getters {
-  [k: string]: () => any
+  [k: string]: () => {}
 }
 
 interface MutationHandlers {
@@ -148,7 +148,7 @@ function initVM(store: StoreImpl, state: State) {
 
 }
 
-function keysOf(obj: any): string[] {
+function keysOf(obj: {}): string[] {
   return Object.keys(obj)
 }
 
