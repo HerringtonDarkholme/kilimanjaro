@@ -91,6 +91,7 @@ export type BaseGetter = Getter<string, {}>
 export type BaseMutation = Mutation0<string, {}>
 export type BaseAction = Action0<string, {}|undefined, {}|void>
 export type BasePayload = Payload0<string, {}>
+export type BaseOpt = Opt<{}, BaseGetter, BaseMutation, BaseAction, BasePayload>
 export type BaseStore = Store<{}, BaseGetter, BaseMutation, BaseAction, BasePayload>
 export type BasePlugin = Plugin<BaseStore>
 
