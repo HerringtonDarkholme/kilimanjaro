@@ -41,7 +41,7 @@ const commitImpl = (store: BaseStore) => memoize((type: string) => (payload?: {}
 
 const getterImpl = (store: BaseStore) => (key: string) => store._vm[key]
 
-export class Store<S, G extends BaseGetter, M extends BaseMutation, A extends BaseAction, P extends BasePayload> implements ActionStore<S, G, M, A> {
+export class StoreImpl<S, G extends BaseGetter, M extends BaseMutation, A extends BaseAction, P extends BasePayload> implements ActionStore<S, G, M, A> {
 
   /** @internal */ _vm: Vue
   /** @internal */ _committing = false

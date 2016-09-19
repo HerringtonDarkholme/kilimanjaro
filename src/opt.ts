@@ -1,4 +1,4 @@
-import {Store} from './store'
+import {StoreImpl} from './store'
 import {CommitOption, ActionStore, Plugin, Opt} from './interface'
 
 export type F0<R> = (this: void) => R
@@ -78,8 +78,8 @@ export class OptImpl<S, G, M, A, P> {
     return this
   }
 
-  done(): Store<S, G, M, A, P> {
-    return new Store(this)
+  done(): StoreImpl<S, G, M, A, P> {
+    return new StoreImpl(this)
   }
 }
 

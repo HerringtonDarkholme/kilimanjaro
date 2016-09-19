@@ -1,7 +1,7 @@
 import Vue = require('vue')
 import {$$Prop} from 'av-ts/dist/src/interface'
 import {Component} from 'av-ts'
-import {Store} from './store'
+import {StoreImpl} from './store'
 
 const VUEX_PROP = '$$Vuex' as $$Prop
 
@@ -23,7 +23,7 @@ export function Vuex(target: Vue, key: string): void {
 // at runtime, helper.getters(key) return a function that return value T
 // so @Vuex getter = getters(key) will resolve to T at type level
 // while on value level vuex decorator can wrap it in vue's `computed` field
-export function getHelper<G, M, A>(store: Store<{}, G, M, A, {}>): Helper<G, M, A> {
+export function getHelper<G, M, A>(store: StoreImpl<{}, G, M, A, {}>): Helper<G, M, A> {
   return ({
     getters(k: string) {
       let getter = store._getters[k]

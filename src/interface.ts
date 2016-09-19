@@ -30,9 +30,9 @@ export interface ActionStore<S, G, M, A> {
 export type F0<R> = (this: void) => R
 export type F01<T, R> = (this: void, t?: T) => R
 export type F1<A, R> = (this: void, a: A) => R
-export type Plugin<S, G, M, A, P> = (s: Store<S, G, M, A, P>) => void
+export type Plugin<S, G, M, A, P> = (s: StoreImpl<S, G, M, A, P>) => void
 
-import {Store} from './store'
+import {StoreImpl} from './store'
 
 
 export interface RawGetter<S, G extends Getter<string, {}>, T> {
@@ -86,7 +86,7 @@ export type BaseGetter = Getter<string, {}>
 export type BaseMutation = Mutation0<string, {}>
 export type BaseAction = Action0<string, {}|undefined, {}|void>
 export type BasePayload = Payload0<string, {}>
-export type BaseStore = Store<{}, BaseGetter, BaseMutation, BaseAction, BasePayload>
+export type BaseStore = StoreImpl<{}, BaseGetter, BaseMutation, BaseAction, BasePayload>
 
 export interface Opt<S, G extends BaseGetter, M extends BaseMutation, A extends BaseAction, P extends BasePayload> {
   getter<K extends string, T>(key: K, f: RawGetter<S, G, T>): Opt<S, Getter<K, T> & G, M, A, P>
@@ -100,5 +100,5 @@ export interface Opt<S, G extends BaseGetter, M extends BaseMutation, A extends 
   module<K extends string, S1, G1 extends BaseGetter, M1 extends BaseMutation, A1 extends BaseAction, P1 extends BasePayload>(key: K, o: Opt<S1, G1, M1, A1, P1>): Opt<S & ModuleState<K, S1>, G1 & G, M1 & M, A1 & A, P1 | P>
 
   plugin(...plugins: Plugin<S, G, M, A, P>[]): this
-  done(): Store<S, G, M, A, P>
+  done(): StoreImpl<S, G, M, A, P>
 }
