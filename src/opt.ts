@@ -1,5 +1,5 @@
-import {ActionStore, Store} from './store'
-import {CommitOption} from './interface'
+import {Store} from './store'
+import {CommitOption, ActionStore} from './interface'
 
 export type F0<R> = (this: void) => R
 export type F01<T, R> = (this: void, t?: T) => R

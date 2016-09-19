@@ -1,18 +1,12 @@
 import {
   Subscriber, RawGetter, CommitOption,
   WatchHandler, WatchOption, Unsubscription,
+  ActionStore,
 } from './interface'
 import {Opt, RawActions, RawGetters, RawMutations} from './opt'
 import {State} from './state'
 import devtoolPlugin from './devtool'
 import Vue = require('vue')
-
-export interface ActionStore<S, G, M, A> {
-  readonly dispatch: A
-  readonly commit: M
-  readonly getters: G
-  readonly state: S
-}
 
 interface Getters {
   [k: string]: () => any

@@ -19,3 +19,10 @@ export interface WatchOption<C, T>{
 }
 
 export type Unsubscription = () => void
+
+export interface ActionStore<S, G, M, A> {
+  readonly dispatch: A
+  readonly commit: M
+  readonly getters: G
+  readonly state: S
+}
