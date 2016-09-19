@@ -107,9 +107,9 @@ function installModules(store: AnyStore, opt: AnyOpt, state: State) {
   registerActions(store, opt._actions, state)
 }
 
-function registerGetters(store: AnyStore, getters: RawGetters<{}>, state: State) {
+function registerGetters(store: AnyStore, getters: RawGetters<{}, {}>, state: State) {
   for (let key of keysOf(getters)) {
-    store._getters[key] = () => getters[key](state)
+    store._getters[key] = () => getters[key](state, store.getters)
   }
 }
 

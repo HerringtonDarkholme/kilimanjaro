@@ -21,12 +21,12 @@ export interface RawMutations<S> {
   [k: string]: RawMutation<S>
 }
 
-export interface RawGetter<S> {
-  (this: void, s: S): any
+export interface RawGetter<S, G> {
+  (this: void, s: S, getter: G): any
 }
 
-export interface RawGetters<S> {
-  [k: string]: RawGetter<S>
+export interface RawGetters<S, G> {
+  [k: string]: RawGetter<S, G>
 }
 
 export interface Modules {
@@ -38,7 +38,7 @@ export type Plugin<S, G, M, A, P> = (s: Store<S, G, M, A, P>) => void
 export class Opt<S, G, M, A, P> {
 
   /** @internal */ _state: S
-  /** @internal */ _getters: RawGetters<S> = {}
+  /** @internal */ _getters: RawGetters<S, G> = {}
   /** @internal */ _actions: RawActions<S, G, M, A> = {}
   /** @internal */ _mutations: RawMutations<S> = {}
   /** @internal */ _modules: Modules = {}
@@ -48,7 +48,7 @@ export class Opt<S, G, M, A, P> {
     this._state = s
   }
 
-  getter<K extends string, T>(key: K, f: (s: S) => T): Opt<S, ((k: K) => T) & G, M, A, P> {
+  getter<K extends string, T>(key: K, f: (s: S, g: G) => T): Opt<S, ((k: K) => T) & G, M, A, P> {
     this._getters[key as string] = f
     return this as any
   }
