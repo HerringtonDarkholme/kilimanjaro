@@ -5,14 +5,14 @@ import {
 } from './interface'
 import {StoreImpl} from './store'
 
-type BaseRawAction = ActDef0<{}, BaseGetter, BaseCommit, BaseDispatch, {}, {}>
-interface RawActions {
-  [k: string]: BaseRawAction
+type BaseActDef = ActDef0<{}, BaseGetter, BaseCommit, BaseDispatch, {}, {}>
+interface ActDefs {
+  [k: string]: BaseActDef
 }
 
-type BaseRawMutation = MutateDef0<{}, {}>
-interface RawMutations {
-  [k: string]: BaseRawMutation
+type BaseMutateDef = MutateDef0<{}, {}>
+interface MutateDefs {
+  [k: string]: BaseMutateDef
 }
 
 type BaseRawGetter = GetDef<{}, BaseGetter, {}>
@@ -29,8 +29,8 @@ export class OptImpl implements BaseOpt {
 
   /** @internal */ _state: {}
   /** @internal */ _getters: RawGetters = {}
-  /** @internal */ _actions: RawActions = {}
-  /** @internal */ _mutations: RawMutations = {}
+  /** @internal */ _actions: ActDefs = {}
+  /** @internal */ _mutations: MutateDefs = {}
   /** @internal */ _modules: Modules = {}
   /** @internal */ _plugins: BasePlugin[]
 
@@ -43,12 +43,12 @@ export class OptImpl implements BaseOpt {
     return this
   }
 
-  mutation(key: string, f: BaseRawMutation) {
+  mutation(key: string, f: BaseMutateDef) {
     this._mutations[key] = f
     return this
   }
 
-  action(key: string, f: BaseRawAction) {
+  action(key: string, f: BaseActDef) {
     this._actions[key] = f
     return this
   }

@@ -48,11 +48,17 @@ export interface MutateDef0<S, T> {
 export interface MutateDef1<S, T> {
   (s: S): F1<T, void>
 }
+export interface MutationHandler0<T> {
+  (this: void, t?: T, opt?: CommitOption): void
+}
+export interface MutationHandler1<T> {
+  (this: void, t: T, opt?: CommitOption): void
+}
 export interface Commit0<K, T> {
-  (k: K): (this: void, t?: T, opt?: CommitOption) => void
+  (k: K): MutationHandler0<T>
 }
 export interface Commit1<K, T> {
-  (k: K): (this: void, t: T, opt?: CommitOption) => void
+  (k: K): MutationHandler1<T>
 }
 
 export interface ActDef0<S, G, C, D, T, R> {
@@ -61,11 +67,13 @@ export interface ActDef0<S, G, C, D, T, R> {
 export interface ActDef1<S, G, C, D, T, R> {
   (s: ActionStore<S, G, C, D>): F1<T, Promise<R> | R>
 }
+export type ActionHandler0<T, R> = F01<T, Promise<R[]>>
+export type ActionHandler1<T, R> = F1<T, Promise<R[]>>
 export interface Dispatch0<K, T, R> {
-  (k: K): F01<T, Promise<R[]>>
+  (k: K): ActionHandler0<T, R>
 }
 export interface Dispatch1<K, T, R> {
-  (k: K): F1<T, Promise<R[]>>
+  (k: K): ActionHandler1<T, R>
 }
 
 export interface Payload0<K, T> {
@@ -106,7 +114,7 @@ export interface Opt<S, G extends BaseGetter, C extends BaseCommit, D extends Ba
   action<K extends string, T, R>(key: K, f: ActDef0<S, G, C, D, T, R>): Opt<S, G, C, Dispatch0<K, T, R> & D,  P>
   action<K extends string, T, R>(key: K, f: ActDef1<S, G, C, D, T, R>): Opt<S, G, C, Dispatch1<K, T, R> & D,  P>
 
-  module<K extends string, S1, G1 extends BaseGetter, M1 extends BaseCommit, D1 extends BaseDispatch, P1 extends BasePayload>(key: K, o: Opt<S1, G1, M1, D1, P1>): Opt<S & ModuleState<K, S1>, G1 & G, M1 & C, D1 & D, P1 | P>
+  module<K extends string, S1, G1 extends BaseGetter, C1 extends BaseCommit, D1 extends BaseDispatch, P1 extends BasePayload>(key: K, o: Opt<S1, G1, C1, D1, P1>): Opt<S & ModuleState<K, S1>, G1 & G, C1 & C, D1 & D, P1 | P>
 
   plugin(...plugins: Plugin<Store<S, G, C, D, P>>[]): this
   done(): Store<S, G, C, D, P>
