@@ -224,4 +224,20 @@ describe('Kilimanjaro', () => {
         expect(store.getters(`g${i}` as any)).to.equal(i)
       }
   })
+
+  it('module: dispatch action across module', done => {
+    const store = create()
+      .module('a', create()
+        .action(TEST, s => () => 1))
+      .module('b', create()
+        .action(TEST, s => () => new Promise(r => r(2))))
+      .done()
+
+    store.dispatch(TEST)().then(r => {
+      expect(r[0]).to.equal(1)
+      expect(r[1]).to.equal(2)
+      done()
+    })
+  })
+
 })
