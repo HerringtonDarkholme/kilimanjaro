@@ -1,12 +1,12 @@
 import {ActionStore, Store} from './store'
 import {CommitOption} from './interface'
 
-export type F0<R> = () => R
-export type F01<T, R> = (t?: T) => R
-export type F1<A, R> = (a: A) => R
+export type F0<R> = (this: void) => R
+export type F01<T, R> = (this: void, t?: T) => R
+export type F1<A, R> = (this: void, a: A) => R
 
 export interface RawAction<S, G, M, A> {
-  (s: ActionStore<S, G, M, A>): F01<any, any|Promise<any>>
+  (this: void, s: ActionStore<S, G, M, A>): F01<any, any|Promise<any>>
 }
 
 export interface RawActions<S, G, M, A> {
@@ -14,7 +14,7 @@ export interface RawActions<S, G, M, A> {
 }
 
 export interface RawMutation<S> {
-  (s: S): (t?: any, m?: CommitOption) => void
+  (this: void, s: S): (t?: any, m?: CommitOption) => void
 }
 
 export interface RawMutations<S> {
@@ -22,7 +22,7 @@ export interface RawMutations<S> {
 }
 
 export interface RawGetter<S> {
-  (s: S): any
+  (this: void, s: S): any
 }
 
 export interface RawGetters<S> {
