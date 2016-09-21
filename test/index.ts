@@ -1,9 +1,10 @@
-import {create, getHelper} from '../'
+import {create, getHelper, Vuex } from '../'
 import * as chai from 'chai'
 import {expect} from 'chai'
 import * as sinonChai from 'sinon-chai'
 import * as sinon from 'sinon'
 import * as Vue from 'vue'
+import { Component } from 'av-ts'
 chai.use(sinonChai)
 
 const TEST = 'TEST'
@@ -314,6 +315,31 @@ describe('Kilimanjaro', () => {
         done()
       })
     })
+  })
+
+  it('should annotate component', () => {
+    let changed =false
+    const store = create({
+      a: 1
+    })
+    .getter('getter', s => s.a + 1)
+    .mutation(TEST, s => (n: number) => {
+      changed = true
+    })
+    .done()
+
+    const { getters, commit } = getHelper(store)
+
+    @Component
+    class Test extends Vue {
+      @Vuex getter = getters('getter')
+      @Vuex mut = commit(TEST)
+    }
+
+    let tst = new Test()
+    expect(tst.getter).to.equal(2)
+    tst.mut(12)
+    expect(changed).to.equal(true)
   })
 
 })

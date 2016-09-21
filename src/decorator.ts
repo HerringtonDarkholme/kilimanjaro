@@ -42,7 +42,7 @@ export function getHelper<G extends BaseGetters, C extends BaseCommit, D extends
 Component.register(VUEX_PROP, function(target, instance, optionsToWrite) {
   let vuexProps: string[] = target[VUEX_PROP]
   for (let key of vuexProps) {
-    let handler = target[key]
+    let handler = instance[key]
     if (handler[GetterKey]) {
       optionsToWrite.computed![key] = handler
     } else if (typeof handler === 'function'){
