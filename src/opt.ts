@@ -1,23 +1,23 @@
 import {
   Opt, BaseOpt,
-  BaseGetters, BaseCommit, BaseDispatch, BasePlugin,
-  GetDef, MutateDef0, ActDef0,
+  BG, BC, BD, BasePlugin,
+  GetDef, MD0, AD0,
 } from './interface'
 import {StoreImpl} from './store'
 
-type BaseActDef = ActDef0<{}, BaseGetters, BaseCommit, BaseDispatch, {}, {}>
+type BaseActDef = AD0<{}, BG, BC, BD, {}, {}>
 /** @internal */
 export interface ActDefs {
   [k: string]: BaseActDef
 }
 
-type BaseMutateDef = MutateDef0<{}, {}>
+type BaseMutateDef = MD0<{}, {}>
 /** @internal */
 export interface MutateDefs {
   [k: string]: BaseMutateDef
 }
 
-type BaseRawGetter = GetDef<{}, BaseGetters, {}>
+type BaseRawGetter = GetDef<{}, BG, {}>
 /** @internal */
 export interface RawGetters {
   [k: string]: BaseRawGetter
@@ -41,7 +41,7 @@ export class OptImpl implements BaseOpt {
     this._state = s
   }
 
-  getter(key: string, f: GetDef<string, BaseGetters, {}>) {
+  getter(key: string, f: GetDef<string, BG, {}>) {
     this._getters[key] = f
     return this
   }
