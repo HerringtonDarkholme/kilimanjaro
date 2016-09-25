@@ -4,6 +4,7 @@
   "description": "Awesome Vuex2.0's for TypeScript2.0",
   "main": "./dist/index.js",
   "scripts": {
+    "compile": "rimraf dist && tsc",
     "test": "mocha dist/test/*.js"
   },
   "typings": "dist/index.d.ts",
@@ -23,6 +24,7 @@
     "@types/sinon-chai": "^2.7.26",
     "chai": "^3.5.0",
     "mocha": "^3.0.2",
+    "rimraf": "^2.5.4",
     "sinon": "^1.17.5",
     "sinon-chai": "^2.8.0",
     "typescript": "2.1.0-dev.20160915"

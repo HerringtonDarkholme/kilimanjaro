@@ -1,6 +1,6 @@
 import {
   Opt, BaseOpt,
-  BG, BC, BD, BasePlugin,
+  BG, BC, BD, BasePlugin, BP,
   GetDef, MD0, AD0,
 } from './interface'
 import {StoreImpl} from './store'
@@ -37,6 +37,12 @@ export class OptImpl implements BaseOpt {
   _modules: Modules = {}
   _plugins: BasePlugin[] = []
 
+  state_t: {}
+  getters_t: BG
+  commit_t: BC
+  dispatch_t: BD
+  payload_t: BP
+
   constructor(s: {}) {
     this._state = s
   }
@@ -71,8 +77,8 @@ export class OptImpl implements BaseOpt {
   }
 }
 
-export function create(): Opt<never, never, never, never, never>
-export function create<S>(s: S): Opt<S, never, never, never, never>
+export function create(): Opt<never, never, never, never, never, never, never>
+export function create<S>(s: S): Opt<S, never, never, never, never, never, never>
 export function create(s = {}): BaseOpt {
   return new OptImpl(s)
 }

@@ -1,7 +1,7 @@
 import {
   VueGetter, CommitOption,
   WatchHandler, WatchOption, Unsubscription,
-  BaseStore, BaseSubscriber,
+  BaseStore, BaseSubscriber, BaseHelper,
   MutationHandler0, F01,
 } from './interface'
 import {OptImpl, ActDefs, RawGetters, MutateDefs} from './opt'
@@ -50,6 +50,7 @@ export class StoreImpl implements BaseStore {
    _mutations: MutationHandlers = {}
    _actions: ActionHandlers = {}
    _subscribers: BaseSubscriber[] = []
+   _helper: BaseHelper
 
    _devtoolHook?: {emit: Function}
 
