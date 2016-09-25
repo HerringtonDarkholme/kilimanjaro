@@ -25,14 +25,15 @@ export function Vuex(target: Vue, key: string): void {
 export function getHelper<G extends BG, CH extends BCH, DH extends BDH>(store: Store<{}, G, BC, BD, BP, CH, DH>): Helper<G, CH, DH> {
   if (store._helper) return store._helper
   const impl: StoreImpl = store as any
+  const { commit, dispatch } = store
   return impl._helper = ({
     getters(k: string) {
       let getter = impl._getters[k]
       getter[GetterKey] = true // a flag to distinguish between methods and computed
       return getter
     },
-    commit: store.commit,
-    dispatch: store.dispatch,
+    commit: memoize((k: string) => (...args: any[]) => commit.apply(null, [k, ...args])),
+    dispatch: memoize((k: string) => (...args: any[]) => dispatch.apply(null, [k, ...args])),
   } as any)
 }
 
@@ -48,3 +49,14 @@ Component.register(VUEX_PROP, function(target, instance, optionsToWrite) {
     delete instance[key]
   }
 })
+
+type Cacheable<R> = (this: void, k: string) => R
+function memoize<R>(func: Cacheable<R>): Cacheable<R> {
+  function memoized(key: string) {
+    let cache: {[k: string]: R} = memoized['cache']
+    if (!cache.hasOwnProperty(key)) cache[key] = func(key)
+    return cache[key]
+  }
+  memoized['cache'] = {}
+  return memoized
+}

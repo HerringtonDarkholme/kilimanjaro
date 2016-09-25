@@ -167,14 +167,3 @@ function recursiveAssign(o: Object, n: Object) {
 function isObj(o: any) {
   return o !== null && typeof o === 'object'
 }
-
-// type Cacheable<R> = (this: void, k: string) => R
-// function memoize<R>(func: Cacheable<R>): Cacheable<R> {
-//   function memoized(key: string) {
-//     let cache: {[k: string]: R} = memoized['cache']
-//     if (!cache.hasOwnProperty(key)) cache[key] = func(key)
-//     return cache[key]
-//   }
-//   memoized['cache'] = {}
-//   return memoized
-// }

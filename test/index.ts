@@ -1,4 +1,4 @@
-import {create, getHelper, Vuex } from '../'
+import {create, getHelper, Vuex } from '../index'
 import * as chai from 'chai'
 import {expect} from 'chai'
 import * as sinonChai from 'sinon-chai'
@@ -19,7 +19,7 @@ describe('Kilimanjaro', () => {
     })
     .done()
 
-    store.commit(TEST)(2)
+    store.commit(TEST, 2)
     expect(store.state.a).to.equal(3)
   })
 
@@ -31,11 +31,11 @@ describe('Kilimanjaro', () => {
       s.a += n
     })
     .action(TEST, ({commit}) => (n: number) => {
-      commit(TEST)(n)
+      commit(TEST, n)
     })
 
     .done()
-    store.dispatch(TEST)(2)
+    store.dispatch(TEST, 2)
     expect(store.state.a).to.equal(3)
   })
 
@@ -48,13 +48,13 @@ describe('Kilimanjaro', () => {
     })
     .action(TEST, ({commit}) => (n: number) => new Promise(resolve => {
       setTimeout(() => {
-        commit(TEST)(n)
+        commit(TEST, n)
         resolve()
       }, 0)
     }))
     .done()
 
-    store.dispatch(TEST)(2).then(() => {
+    store.dispatch(TEST, 2).then(() => {
       expect(store.state.a).to.equal(3)
       done()
     })
@@ -71,7 +71,7 @@ describe('Kilimanjaro', () => {
     let spy = sinon.spy()
     let thenSpy = sinon.spy()
     store['_devtoolHook'] = {emit: spy}
-    store.dispatch(TEST)()
+    store.dispatch(TEST)
       .then(thenSpy)
       .catch(err => {
         expect(thenSpy).not.to.have.been.called
@@ -90,10 +90,10 @@ describe('Kilimanjaro', () => {
       })
       .done()
     expect(store.getters('hasAny')).to.equal(false)
-    store.dispatch('check')(false)
-    store.commit(TEST)(1)
+    store.dispatch('check', false)
+    store.commit(TEST, 1)
     expect(store.getters('hasAny')).to.equal(true)
-    store.dispatch('check')(true)
+    store.dispatch('check', true)
   })
 
   it('helper: mutation', () => {
@@ -166,7 +166,7 @@ describe('Kilimanjaro', () => {
       .module('four', create({a: 6})
         .mutation(TEST, mutation))
       .done()
-    store.commit(TEST)(1)
+    store.commit(TEST, 1)
     expect(store.state.a).to.equal(2)
     expect(store.state.$('nested').a).to.equal(3)
     expect(store.state.$('nested').$('one').a).to.equal(4)
@@ -195,7 +195,7 @@ describe('Kilimanjaro', () => {
       .module('four', create({a: 6})
         .action(TEST, makeAction(6)))
       .done()
-    store.dispatch(TEST)()
+    store.dispatch(TEST)
     expect(calls).to.equal(6)
   })
 
@@ -235,7 +235,7 @@ describe('Kilimanjaro', () => {
         .action(TEST, s => () => new Promise(r => r(2))))
       .done()
 
-    store.dispatch(TEST)().then(r => {
+    store.dispatch(TEST).then(r => {
       expect(r[0]).to.equal(1)
       expect(r[1]).to.equal(2)
       done()
@@ -256,7 +256,7 @@ describe('Kilimanjaro', () => {
       })
       .done()
     expect(initState).to.equal(store.state)
-    store.commit(TEST)(2)
+    store.commit(TEST, 2)
     expect(mutations.length).to.equal(1)
     expect(mutations[0].type).to.equal(TEST)
     expect(mutations[0].payload).to.equal(2)
@@ -273,8 +273,8 @@ describe('Kilimanjaro', () => {
         })
       })
       .done()
-    store.commit(TEST)(2)
-    store.commit(TEST)(2, {silent: true})
+    store.commit(TEST, 2)
+    store.commit(TEST, 2, {silent: true})
     expect(mutations.length).to.equal(1)
     expect(mutations[0].type).to.equal(TEST)
     expect(mutations[0].payload).to.equal(2)
