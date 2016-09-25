@@ -22,7 +22,7 @@ var rabbitHouse = create({
   .mutation('pay_check', state => () => state.order += 1)
   .action('order', store => kind => {
     if (kind === 'tea') console.log('ordered tea!')
-    store.commit('pay_check')() // just call thunk for mutation without payload
+    store.commit('pay_check') // commit mutation without payload
   })
 
 var sweetRabbitCafe = create({
@@ -37,7 +37,7 @@ var sweetRabbitCafe = create({
   .mutation('eat_sweet', state => n => state.ankoAmount -= n)
   .action('order_anko', store => n => {
     if (store.getters('remainingAnko') < n) return console.log('no enough anko!')
-    store.commit('eat_sweet')(n) // commit payload
+    store.commit('eat_sweet', n) // commit payload
   })
 
 var allCoffeeShop = create()
@@ -47,9 +47,9 @@ var allCoffeeShop = create()
     // get all coffee from module
     store.getters('coffee')
     // commit mutations defined in module
-    store.commit('pay_check')()
+    store.commit('pay_check')
     // dispatch returns a promise
-    store.dispatch('eat_sweet')(2).then(() => console.log('done!'))
+    store.dispatch('eat_sweet', 2).then(() => console.log('done!'))
     // get sub state
     store.state.$('rabbitHouse')
   })
