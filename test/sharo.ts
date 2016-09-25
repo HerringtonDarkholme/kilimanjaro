@@ -28,7 +28,7 @@ var sweetRabbitCafe = create({
   .mutation('eat_sweet', state => (n: number) => state.ankoAmount -= n)
   .action('order_anko', store => (n: number) => {
     if (store.getters('remainingAnko') < n) return console.log('no enough anko!')
-    store.commit('eat_sweet')(n) // commit payload
+    store.commit('eat_sweet', n) // commit payload
   })
   .action('order0', store => () => {})
   .action('order1', store => (kind: string) => {})
@@ -43,7 +43,7 @@ var allCoffeeShop = create()
     // commit mutations defined in module
     store.commit('pay_check')()
     // dispatch returns a promise
-    store.dispatch('order_anko')(2).then(() => console.log('done!'))
+    store.dispatch('order_anko', 2).then(() => console.log('done!'))
     // get sub state
     store.state.$('rabbitHouse')
   })
@@ -62,43 +62,34 @@ var allCoffeeShop = create()
 var commit = allCoffeeShop.commit
 var dispatch = allCoffeeShop.dispatch
 
-var payCheck = commit('pay_check')
-var payCheck0 = commit('pay_check0')
-var payCheck1 = commit('pay_check1')
-var payCheck2 = commit('pay_check2')
-
-var order = dispatch('order')
-var order0 = dispatch('order0')
-var order1 = dispatch('order1')
-var order2 = dispatch('order2')
 
 //should compile
-payCheck(undefined, {silent: true})
-payCheck(123)
-payCheck(123, {silent: false})
-payCheck0()
-payCheck0(undefined, {silent: true})
-payCheck1(123)
-payCheck2()
-payCheck2(123)
+commit('pay_check', undefined, {silent: true})
+commit('pay_check', 123)
+commit('pay_check', 123, {silent: false})
+commit('pay_check0')
+commit('pay_check0', undefined, {silent: true})
+commit('pay_check1', 123)
+commit('pay_check2')
+commit('pay_check2', 123)
 
-order('string')
-order()
-order0()
-order1('123')
-order2()
-order2('123')
+dispatch('order', 'string')
+dispatch('order')
+dispatch('order0')
+dispatch('order1', '123')
+dispatch('order2')
+dispatch('order2', '123')
 
 // should not compile
-payCheck0(123)
-// payCheck('123')
-// payCheck({silent: true})
-// payCheck1()
-// payCheck1('123')
-// payCheck2('123')
+commit('pay_check0', 123)
+// commit('pay_check', '123')
+// commit('pay_check', {silent: true})
+// commit('pay_check1')
+// commit('pay_check1', '123')
+// commit('pay_check2', '123')
 
-order0('ss')
-// order(123)
-// order1()
-// order1(123)
-// order2(123)
+dispatch('order0', 'ss')
+// dispatch('order', 123)
+// dispatch('order1')
+// dispatch('order1', 123)
+// dispatch('order2', 123)
