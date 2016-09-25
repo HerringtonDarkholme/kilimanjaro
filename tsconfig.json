@@ -13,7 +13,7 @@
         "suppressImplicitAnyIndexErrors": true,
         "declaration": true,
         "stripInternal": true,
-        "outDir": "./dist",
+        "outDir": "dist",
         "lib": ["es5", "es2015.promise", "dom"]
     },
     "exclude": [

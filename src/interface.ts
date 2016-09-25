@@ -55,10 +55,10 @@ export interface MutationHandler1<T> {
   (this: void, t: T, opt?: CommitOption): void
 }
 export interface Commit0<K, T> {
-  (k: K): MutationHandler0<T>
+  (k: K, t?: T, opt?: CommitOption): void
 }
 export interface Commit1<K, T> {
-  (k: K): MutationHandler1<T>
+  (k: K, t: T, opt?: CommitOption): void
 }
 
 export interface ActDef0<S, G, C, D, T, R> {
@@ -70,10 +70,10 @@ export interface ActDef1<S, G, C, D, T, R> {
 export type ActionHandler0<T, R> = F01<T, Promise<R[]>>
 export type ActionHandler1<T, R> = F1<T, Promise<R[]>>
 export interface Dispatch0<K, T, R> {
-  (k: K): ActionHandler0<T, R>
+  (k: K, t?: T): Promise<R[]>
 }
 export interface Dispatch1<K, T, R> {
-  (k: K): ActionHandler1<T, R>
+  (k: K, t: T): Promise<R[]>
 }
 
 export interface Payload0<K, T> {
@@ -97,7 +97,7 @@ export interface Plugin<Str extends BaseStore> {
 // type bound and implementation type
 export type BaseGetters = Getters<string, {}>
 export type BaseCommit = Commit0<string, {}>
-export type BaseDispatch = Dispatch0<string, {}|undefined, {}|void>
+export type BaseDispatch = Dispatch0<string, {}|void, {}|void>
 export type BasePayload = Payload0<string, {}>
 export type BaseOpt = Opt<{}, BaseGetters, BaseCommit, BaseDispatch, BasePayload>
 export type BaseStore = Store<{}, BaseGetters, BaseCommit, BaseDispatch, BasePayload>
