@@ -67,7 +67,7 @@ export class OptImpl implements BaseOpt {
   }
 
   done() {
-    return new StoreImpl(this) as any
+    return new StoreImpl(this)
   }
 }
 

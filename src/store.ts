@@ -21,15 +21,15 @@ interface ActionHandlers {
   [k: string]: F01<{}, {} | Promise<{}>>[]
 }
 
-const dispatchImpl = (store: StoreImpl) => memoize((type: string) => (payload?: {}) => {
+const dispatchImpl = (store: StoreImpl) => (type: string, payload?: {}) => {
   let handlers = store._actions[type]
   return Promise.all(handlers.map(h => h(payload))).catch(err => {
     store._devtoolHook && store._devtoolHook.emit('vuex:error', err)
     throw err
   })
-})
+}
 
-const commitImpl = (store: StoreImpl) => memoize((type: string) => (payload?: {}, opt?: CommitOption) => {
+const commitImpl = (store: StoreImpl) => (type: string, payload?: {}, opt?: CommitOption) => {
   const mutation = {type, payload}
   let handlers = store._mutations[type]
   handlers.forEach(h => h(payload))
@@ -37,7 +37,7 @@ const commitImpl = (store: StoreImpl) => memoize((type: string) => (payload?: {}
   if (!opt || !opt.silent) {
     store._subscribers.forEach(s => s(mutation, store.state))
   }
-})
+}
 
 const getterImpl = (store: StoreImpl) => (key: string) => store._vm[key]
 
@@ -167,13 +167,13 @@ function isObj(o: any) {
   return o !== null && typeof o === 'object'
 }
 
-type Cacheable<R> = (this: void, k: string) => R
-function memoize<R>(func: Cacheable<R>): Cacheable<R> {
-  function memoized(key: string) {
-    let cache: {[k: string]: R} = memoized['cache']
-    if (!cache.hasOwnProperty(key)) cache[key] = func(key)
-    return cache[key]
-  }
-  memoized['cache'] = {}
-  return memoized
-}
+// type Cacheable<R> = (this: void, k: string) => R
+// function memoize<R>(func: Cacheable<R>): Cacheable<R> {
+//   function memoized(key: string) {
+//     let cache: {[k: string]: R} = memoized['cache']
+//     if (!cache.hasOwnProperty(key)) cache[key] = func(key)
+//     return cache[key]
+//   }
+//   memoized['cache'] = {}
+//   return memoized
+// }
