@@ -13,7 +13,7 @@ var rabbitHouse = create({
   .mutation('pay_check2', state => (n = 2) => state.order += 1)
   .action('order', store => (kind?: string) => {
     if (kind === 'tea') console.log('ordered tea!')
-    store.commit('pay_check')() // just call thunk for mutation without payload
+    store.commit('pay_check') // just call thunk for mutation without payload
   })
 
 var sweetRabbitCafe = create({

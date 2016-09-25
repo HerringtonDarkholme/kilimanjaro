@@ -302,12 +302,12 @@ describe('Kilimanjaro', () => {
     expect(test).to.equal(0)
     expect(nested).to.equal(0)
     expect(calls).to.equal(0)
-    store.commit(TEST)()
+    store.commit(TEST)
     Vue.nextTick(() => {
       expect(test).to.equal(2)
       expect(nested).to.equal(0)
       expect(calls).to.equal(1)
-      store.commit('inner')()
+      store.commit('inner')
       Vue.nextTick(() => {
         expect(test).to.equal(2)
         expect(nested).to.equal(3)
