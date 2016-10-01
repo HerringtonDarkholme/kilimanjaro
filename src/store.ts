@@ -23,6 +23,10 @@ interface ActionHandlers {
 
 const dispatchImpl = (store: StoreImpl) => (type: string, payload?: {}) => {
   let handlers = store._actions[type]
+  if (!handlers) {
+    console.error(`unknown action type: ${type}`)
+    return null as any
+  }
   return Promise.all(handlers.map(h => h(payload))).catch(err => {
     store._devtoolHook && store._devtoolHook.emit('vuex:error', err)
     throw err
@@ -32,6 +36,10 @@ const dispatchImpl = (store: StoreImpl) => (type: string, payload?: {}) => {
 const commitImpl = (store: StoreImpl) => (type: string, payload?: {}, opt?: CommitOption) => {
   const mutation = {type, payload}
   let handlers = store._mutations[type]
+  if (!handlers) {
+    console.error(`unknown action type: ${type}`)
+    return
+  }
   handlers.forEach(h => h(payload))
 
   if (!opt || !opt.silent) {

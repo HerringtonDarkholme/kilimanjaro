@@ -10,6 +10,22 @@ chai.use(sinonChai)
 const TEST = 'TEST'
 
 describe('Kilimanjaro', () => {
+  it('should compile by declaration', () => {
+    const store = create()
+    .declareGetter<'testGet', string>()
+    .declareMutation<'commit', string>()
+    .declareAction<'dispatch', string, string>()
+    .done()
+
+    sinon.spy(console, 'error')
+    store.getters('testGet')
+    store.commit('commit', 'test')
+    expect(console['error']['called']).to.be.true
+    store.dispatch('dispatch', 'test')
+    expect(console['error']['called']).to.be.true
+    console['error']['restore']()
+  })
+
   it('committing mutations', () => {
     const store = create({
       a: 1
