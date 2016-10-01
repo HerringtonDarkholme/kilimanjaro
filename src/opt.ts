@@ -51,16 +51,19 @@ export class OptImpl implements BaseOpt {
     this._getters[key] = f
     return this
   }
+  declareGetter() { return this }
 
   mutation(key: string, f: BaseMutateDef) {
     this._mutations[key] = f
     return this
   }
+  declareMutation() { return this }
 
   action(key: string, f: BaseActDef) {
     this._actions[key] = f
     return this
   }
+  declareAction() { return this }
 
   module(key: string, o: OptImpl) {
     this._modules[key] = o

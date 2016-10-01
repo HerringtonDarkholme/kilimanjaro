@@ -131,12 +131,15 @@ export type BaseHelper = Helper<BG, BCH, BDH>
 // type level wizardry
 export interface Opt<S, G extends BG, C extends BC, D extends BD, P extends BP, CH extends BCH, DH extends BDH> {
   getter<K extends string, T>(key: K, f: GetDef<S, G, T>): Opt<S, Getters<K, T> & G, C, D, P, CH, DH>
+  declareGetter<K extends string, T>(): Opt<S, Getters<K, T> & G, C, D, P, CH, DH>
 
   mutation<K extends string, T>(key: K, f: MD0<S, T>): Opt<S, G, C0<K, T> & C, D, P0<K, T> | P, CH0<K, T> & CH, DH>
   mutation<K extends string, T>(key: K, f: MD1<S, T>): Opt<S, G, C1<K, T> & C, D, P1<K, T> | P, CH1<K, T> & CH, DH>
+  declareMutation<K extends string, T>(): Opt<S, G, C1<K, T> & C, D, P1<K, T> | P, CH1<K, T> & CH, DH>
 
   action<K extends string, T, R>(key: K, f: AD0<S, G, C, D, T, R>): Opt<S, G, C, D0<K, T, R> & D,  P, CH, DH0<K, T, R> & DH>
   action<K extends string, T, R>(key: K, f: AD1<S, G, C, D, T, R>): Opt<S, G, C, D1<K, T, R> & D,  P, CH, DH1<K, T, R> & DH>
+  declareAction<K extends string, T, R>(): Opt<S, G, C, D1<K, T, R> & D,  P, CH, DH1<K, T, R> & DH>
 
   module<K extends string, S1, G1 extends BG, C1 extends BC, D1 extends BD, P1 extends BP, CH1 extends BCH, DH1 extends BDH>(key: K, o: Opt<S1, G1, C1, D1, P1, CH1, DH1>): Opt<S & ModuleState<K, S1>, G1 & G, C1 & C, D1 & D, P1 | P, CH1 & CH, DH1 & DH>
 
