@@ -1,11 +1,12 @@
 import Vue = require('vue')
 import {$$Prop} from 'av-ts/dist/src/interface'
+import {createMap} from 'av-ts/dist/src/util'
 import {Component} from 'av-ts'
 import {
   Store, BG, BC, BD, BP, BCH, BDH,
   Helper,
 } from './interface'
-import {StoreImpl} from './store'
+import StoreImpl from './store'
 
 const VUEX_PROP = '$$Vuex' as $$Prop
 
@@ -54,9 +55,9 @@ type Cacheable<R> = (this: void, k: string) => R
 function memoize<R>(func: Cacheable<R>): Cacheable<R> {
   function memoized(key: string) {
     let cache: {[k: string]: R} = memoized['cache']
-    if (!cache.hasOwnProperty(key)) cache[key] = func(key)
+    if (!cache[key]) cache[key] = func(key)
     return cache[key]
   }
-  memoized['cache'] = {}
+  memoized['cache'] = createMap()
   return memoized
 }

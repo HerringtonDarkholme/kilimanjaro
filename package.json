@@ -22,7 +22,7 @@
     "@types/chai": "^3.4.32",
     "@types/mocha": "^2.2.31",
     "@types/sinon-chai": "^2.7.26",
-    "av-ts": "^0.1.0",
+    "av-ts": "^0.1.1",
     "chai": "^3.5.0",
     "mocha": "^3.0.2",
     "rimraf": "^2.5.4",
@@ -32,7 +32,7 @@
     "vue": "^2.0.0-rc.8"
   },
   "peerDependencies": {
-    "av-ts": "^0.1.0",
+    "av-ts": "^0.1.1",
     "vue": "^2.0.0-rc.7"
   }
 }

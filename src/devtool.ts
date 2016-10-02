@@ -1,4 +1,4 @@
-import { StoreImpl } from './store'
+import StoreImpl from './store'
 
 type _ = {}
 const devtoolHook =
@@ -13,7 +13,7 @@ export default function devtoolPlugin(store: StoreImpl) {
 
   devtoolHook.emit('vuex:init', store)
 
-  devtoolHook.on('vuex:travel-to-state', (targetState: {}) => {
+  devtoolHook.on('vuex:travel-to-state', (targetState: _) => {
     store.replaceState(targetState)
   })
 

@@ -4,22 +4,11 @@ import {
   BaseStore, BaseSubscriber, BaseHelper,
   MutationHandler0, F01,
 } from './interface'
-import {OptImpl, ActDefs, RawGetters, MutateDefs} from './opt'
-import {State} from './state'
+import OptImpl, {ActDefs, RawGetters, MutateDefs} from './opt'
+import State from './state'
 import devtoolPlugin from './devtool'
 import Vue = require('vue')
-
-interface Getters {
-  [k: string]: () => {}
-}
-
-interface MutationHandlers {
-  [k: string]: MutationHandler0<{}>[]
-}
-
-interface ActionHandlers {
-  [k: string]: F01<{}, {} | Promise<{}>>[]
-}
+import {createMap} from 'av-ts/dist/src/util'
 
 const dispatchImpl = (store: StoreImpl) => (type: string, payload?: {}) => {
   let handlers = store._actions[type]
@@ -50,13 +39,13 @@ const commitImpl = (store: StoreImpl) => (type: string, payload?: {}, opt?: Comm
 const getterImpl = (store: StoreImpl) => (key: string) => store._vm[key]
 
 /** @internal */
-export class StoreImpl implements BaseStore {
+export default class StoreImpl implements BaseStore {
 
    _vm: Vue
 
-   _getters: Getters = {}
-   _mutations: MutationHandlers = {}
-   _actions: ActionHandlers = {}
+   _getters = createMap<() => {}>()
+   _mutations = createMap<MutationHandler0<{}>[]>()
+   _actions = createMap<F01<{}, {} | Promise<{}>>[]>()
    _subscribers: BaseSubscriber[] = []
    _helper: BaseHelper
 
@@ -104,7 +93,7 @@ export class StoreImpl implements BaseStore {
 
 function installModules(store: StoreImpl, opt: OptImpl, state: State) {
   const modules = opt._modules
-  for (let key of keysOf(modules)) {
+  for (let key in modules) {
     let moduleOpt = modules[key]
     let subState = state.avtsModuleState[key] = new State(moduleOpt._state)
     installModules(store, moduleOpt, subState)
@@ -115,14 +104,14 @@ function installModules(store: StoreImpl, opt: OptImpl, state: State) {
 }
 
 function registerGetters(store: StoreImpl, getters: RawGetters, state: State) {
-  for (let key of keysOf(getters)) {
+  for (let key in getters) {
     store._getters[key] = () => getters[key](state, store.getters)
   }
 }
 
 function registerMutations(store: StoreImpl, mutations: MutateDefs, state: State) {
   const _mutations = store._mutations
-  for (let key of keysOf(mutations)) {
+  for (let key in mutations) {
     _mutations[key] = _mutations[key] || []
     const mutation = mutations[key](state)
     _mutations[key].push(mutation)
@@ -131,7 +120,7 @@ function registerMutations(store: StoreImpl, mutations: MutateDefs, state: State
 
 function registerActions(store: StoreImpl, actions: ActDefs, state: State) {
   const _actions = store._actions
-  for (let key of keysOf(actions)) {
+  for (let key in actions) {
     _actions[key] = _actions[key] || []
     const action = actions[key]({
       state: state,
@@ -156,12 +145,8 @@ function initVM(store: StoreImpl, state: State) {
 
 }
 
-function keysOf(obj: {}): string[] {
-  return Object.keys(obj)
-}
-
 function recursiveAssign(o: Object, n: Object) {
-  for (let key of keysOf(o)) {
+  for (let key of Object.keys(o)) {
     let oVal = o[key]
     let nVal = n[key]
     if (isObj(oVal) && isObj(nVal)) {

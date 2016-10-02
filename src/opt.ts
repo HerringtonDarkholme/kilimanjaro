@@ -3,7 +3,9 @@ import {
   BG, BC, BD, BasePlugin, BP,
   GetDef, MD0, AD0,
 } from './interface'
-import {StoreImpl} from './store'
+import StoreImpl from './store'
+import {createMap} from 'av-ts/dist/src/util'
+const m = createMap
 
 type BaseActDef = AD0<{}, BG, BC, BD, {}, {}>
 /** @internal */
@@ -23,18 +25,14 @@ export interface RawGetters {
   [k: string]: BaseRawGetter
 }
 
-interface Modules {
-  [k: string]: OptImpl
-}
-
 /** @internal */
-export class OptImpl implements BaseOpt {
+export default class OptImpl implements BaseOpt {
 
   _state: {}
-  _getters: RawGetters = {}
-  _actions: ActDefs = {}
-  _mutations: MutateDefs = {}
-  _modules: Modules = {}
+  _getters: RawGetters = m<BaseRawGetter>()
+  _actions: ActDefs = m<BaseActDef>()
+  _mutations: MutateDefs = m<BaseMutateDef>()
+  _modules = m<OptImpl>()
   _plugins: BasePlugin[] = []
 
   state_t: {}
