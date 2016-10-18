@@ -44,10 +44,10 @@ export interface Getters<K, T> {
 
 // mutation definition
 export interface MD0<S, T> {
-  (s: S): F0<void> & F01<T, void>
+  (s: S, t?: T): void
 }
 export interface MD1<S, T> {
-  (s: S): F1<T, void>
+  (s: S, t: T): void
 }
 export interface MutationHandler0<T> {
   (this: void, t?: T, opt?: CommitOption): void
@@ -70,10 +70,10 @@ export interface CH1<K, T> {
 
 // action definition
 export interface AD0<S, G, C, D, T, R> {
-  (s: ActionStore<S, G, C, D>): F0<Promise<R> | R> & F1<T, Promise<R>|R>
+  (s: ActionStore<S, G, C, D>, r?: T): Promise<R> | R
 }
 export interface AD1<S, G, C, D, T, R> {
-  (s: ActionStore<S, G, C, D>): F1<T, Promise<R> | R>
+  (s: ActionStore<S, G, C, D>, r: T): Promise<R> | R
 }
 export type ActionHandler0<T, R> = F01<T, Promise<R[]>>
 export type ActionHandler1<T, R> = F1<T, Promise<R[]>>
@@ -133,8 +133,9 @@ export interface Opt<S, G extends BG, C extends BC, D extends BD, P extends BP, 
   getter<K extends string, T>(key: K, f: GetDef<S, G, T>): Opt<S, Getters<K, T> & G, C, D, P, CH, DH>
   declareGetter<K extends string, T>(): Opt<S, Getters<K, T> & G, C, D, P, CH, DH>
 
-  mutation<K extends string, T>(key: K, f: MD0<S, T>): Opt<S, G, C0<K, T> & C, D, P0<K, T> | P, CH0<K, T> & CH, DH>
-  mutation<K extends string, T>(key: K, f: MD1<S, T>): Opt<S, G, C1<K, T> & C, D, P1<K, T> | P, CH1<K, T> & CH, DH>
+  mutation<K extends string>(key: K, f: (s: S, a?: void) => void): Opt<S, G, C0<K, undefined> & C, D, P0<K, undefined> | P, CH0<K, undefined> & CH, DH>
+  mutation<K extends string, T extends {toString(): string}>(key: K, f: MD1<S, T>): Opt<S, G, C1<K, T> & C, D, P1<K, T> | P, CH1<K, T> & CH, DH>
+  // mutation<K extends string, T>(key: K, f: MD0<S, T>): Opt<S, G, C0<K, T> & C, D, P0<K, T> | P, CH0<K, T> & CH, DH>
   declareMutation<K extends string, T>(): Opt<S, G, C1<K, T> & C, D, P1<K, T> | P, CH1<K, T> & CH, DH>
 
   action<K extends string, T, R>(key: K, f: AD0<S, G, C, D, T, R>): Opt<S, G, C, D0<K, T, R> & D,  P, CH, DH0<K, T, R> & DH>
