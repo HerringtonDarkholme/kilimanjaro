@@ -30,7 +30,7 @@ describe('Kilimanjaro', () => {
     const store = create({
       a: 1
     })
-    .mutation(TEST, s => (n: number) => {
+    .mutation(TEST, (s, n: number) => {
       s.a += n
     })
     .done()
@@ -43,10 +43,10 @@ describe('Kilimanjaro', () => {
     const store = create({
       a: 1
     })
-    .mutation(TEST, s => (n: number) => {
+    .mutation(TEST, (s, n: number) => {
       s.a += n
     })
-    .action(TEST, ({commit}) => (n: number) => {
+    .action(TEST, ({commit}, n: number) => {
       commit(TEST, n)
     })
 
@@ -59,10 +59,10 @@ describe('Kilimanjaro', () => {
     const store = create({
       a: 1
     })
-    .mutation(TEST, s => (n: number) => {
+    .mutation(TEST, (s, n: number) => {
       s.a += n
     })
-    .action(TEST, ({commit}) => (n: number) => new Promise(resolve => {
+    .action(TEST, ({commit}, n: number) => new Promise(resolve => {
       setTimeout(() => {
         commit(TEST, n)
         resolve()
@@ -79,7 +79,7 @@ describe('Kilimanjaro', () => {
 
   it('detect promise error', done => {
     const store = create()
-    .action(TEST, _ => () => new Promise((_, reject) => {
+    .action(TEST, _ => new Promise((_, reject) => {
       reject('no')
     }))
     .done()
@@ -100,8 +100,8 @@ describe('Kilimanjaro', () => {
   it('getters', () => {
      const store = create({a: 1})
       .getter('hasAny', s => s.a > 1)
-      .mutation(TEST, s => (n: number) => s.a += n)
-      .action('check', ({getters}) => (v: boolean) => {
+      .mutation(TEST, (s, n: number) => s.a += n)
+      .action('check', ({getters}, v: boolean) => {
         expect(getters('hasAny')).to.equal(v)
       })
       .done()
@@ -114,8 +114,8 @@ describe('Kilimanjaro', () => {
 
   it('helper: mutation', () => {
     const store = create({count: 0})
-      .mutation('inc', s => () => s.count++)
-      .mutation('dec', s => () => s.count--)
+      .mutation('inc', s => s.count++)
+      .mutation('dec', s => s.count--)
       .done()
     const { commit } = getHelper(store)
     commit('inc')()
@@ -126,8 +126,8 @@ describe('Kilimanjaro', () => {
 
   it('helper: getter', () => {
     const store = create({count: 0})
-      .mutation('inc', s => () => s.count++)
-      .mutation('dec', s => () => s.count--)
+      .mutation('inc', s => s.count++)
+      .mutation('dec', s => s.count--)
       .getter('hasAny', s => s.count > 0)
       .getter('negative', ({count}) => count < 0)
       .done()
@@ -151,20 +151,20 @@ describe('Kilimanjaro', () => {
     let a = sinon.spy()
     let b = sinon.spy()
     const store = create()
-      .action('a', s => a)
-      .action('b', s => b)
+      .action('a', s => a())
+      .action('b', s => b())
       .done()
 
     const {dispatch} = getHelper(store)
-    dispatch('a')()
+    dispatch('a')().then()
     expect(a).to.have.been.called
     expect(b).not.to.have.been.called
-    dispatch('b')()
+    dispatch('b')().then()
     expect(b).to.have.been.called
   })
 
   it('module: mutation', () => {
-    const mutation = (s: {a: number}) => (n: number) => {
+    const mutation = (s: {a: number}, n: number) => {
       s.a += n
     }
 
@@ -193,7 +193,7 @@ describe('Kilimanjaro', () => {
 
   it('module: action', () => {
     let calls = 0
-    const makeAction = (n: number) => ({state}: {state: {a: number}}) => () => {
+    const makeAction = (n: number) => ({state}: {state: {a: number}}) => {
       calls++
       expect(state.a).to.equal(n)
     }
@@ -246,9 +246,9 @@ describe('Kilimanjaro', () => {
   it('module: dispatch action across module', done => {
     const store = create()
       .module('a', create()
-        .action(TEST, s => () => 1))
+        .action(TEST, s => 1))
       .module('b', create()
-        .action(TEST, s => () => new Promise(r => r(2))))
+        .action(TEST, s => new Promise(r => r(2))))
       .done()
 
     store.dispatch(TEST).then(r => {
@@ -262,7 +262,7 @@ describe('Kilimanjaro', () => {
     let initState: any
     const mutations: any[] = []
     const store = create({a: 1})
-      .mutation(TEST, s => (n: number) => s.a += n)
+      .mutation(TEST, (s, n: number) => s.a += n)
       .plugin(store => {
         initState = store.state
         store.subscribe((mut, state) => {
@@ -281,7 +281,7 @@ describe('Kilimanjaro', () => {
   it('plugin ignore silent mutation', () => {
     const mutations: any[] = []
     const store = create({a: 1})
-      .mutation(TEST, s => (n: number) => s.a += n)
+      .mutation(TEST, (s, n: number) => s.a += n)
       .plugin(store => {
         store.subscribe((mut, state) => {
           expect(state).to.equal(store.state)
@@ -299,9 +299,9 @@ describe('Kilimanjaro', () => {
 
   it('watch change in vue', done => {
     const store = create({a: 1})
-      .mutation(TEST, s => () => s.a += 1)
+      .mutation(TEST, s => s.a += 1)
       .module('nested', create({a: 2})
-        .mutation('inner', s => () => s.a += 1))
+        .mutation('inner', s => s.a += 1))
       .done()
 
     let test = 0
@@ -339,7 +339,7 @@ describe('Kilimanjaro', () => {
       a: 1
     })
     .getter('getter', s => s.a + 1)
-    .mutation(TEST, s => (n: number) => {
+    .mutation(TEST, (s, n: number) => {
       changed = true
     })
     .done()

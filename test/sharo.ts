@@ -7,41 +7,48 @@ var rabbitHouse = create({
     order: 0,
   })
   .getter('coffee', state => state.cappuccino)
-  .mutation('pay_check0', state => () => state.order += 1)
-  .mutation('pay_check', state => (n?: number) => state.order += 1)
-  .mutation('pay_check1', state => (n: number) => state.order += 1)
-  .mutation('pay_check2', state => (n = 2) => state.order += 1)
-  .action('order', store => (kind?: string) => {
+  .mutation('pay_check0', state => state.order += 1)
+  .mutation('pay_check', (state, n?: number) => state.order += 1)
+  .mutation('pay_check1', (state, n: number) => state.order += n)
+  .mutation('pay_check2', (state, n: number = 2) => state.order += n)
+  .action('order', (store, kind?: string) => {
     if (kind === 'tea') console.log('ordered tea!')
-    store.commit('pay_check') // just call thunk for mutation without payload
+    store.commit('pay_check')
   })
 
+interface SweetRabbit {
+    matcha: string,
+    anko: string,
+    kilimanjaro: string,
+    ankoAmount: number,
+    matchaAmount: number,
+}
 var sweetRabbitCafe = create({
     matcha: 'tea',
     anko: 'sweets',
     kilimanjaro: 'coffee',
     ankoAmount: 10,
     matchaAmount: 5,
-  })
+  } as SweetRabbit)
   // we need leave enough anko for matcha dessert!
   .getter('remainingAnko', state => state.ankoAmount - state.matchaAmount)
-  .mutation('eat_sweet', state => (n: number) => state.ankoAmount -= n)
-  .action('order_anko', store => (n: number) => {
+  .mutation('eat_sweet', (state, n: number) => state.ankoAmount -= n)
+  .action('order_anko', (store, n: number) => {
     if (store.getters('remainingAnko') < n) return console.log('no enough anko!')
     store.commit('eat_sweet', n) // commit payload
   })
-  .action('order0', store => () => {})
-  .action('order1', store => (kind: string) => {})
-  .action('order2', store => (kind = 'coffee') => {})
+  .action('order0', store => {})
+  .action('order1', (store, kind: string) => {})
+  .action('order2', (store, kind = 'coffee') => {})
 
 var allCoffeeShop = create()
   .module('rabbitHouse', rabbitHouse)
   .module('sweetRabbitCafe', sweetRabbitCafe)
-  .action('order a rabbit', store => () => {
+  .action('order a rabbit', store => {
     // get all coffee from module
     store.getters('coffee')
     // commit mutations defined in module
-    store.commit('pay_check')()
+    store.commit('pay_check')
     // dispatch returns a promise
     store.dispatch('order_anko', 2).then(() => console.log('done!'))
     // get sub state
@@ -82,14 +89,14 @@ dispatch('order2', '123')
 
 // should not compile
 commit('pay_check0', 123)
-// commit('pay_check', '123')
-// commit('pay_check', {silent: true})
-// commit('pay_check1')
-// commit('pay_check1', '123')
-// commit('pay_check2', '123')
+commit('pay_check', '123')
+commit('pay_check', {silent: true})
+commit('pay_check1')
+commit('pay_check1', '123')
+commit('pay_check2', '123')
 
 dispatch('order0', 'ss')
-// dispatch('order', 123)
-// dispatch('order1')
-// dispatch('order1', 123)
-// dispatch('order2', 123)
+dispatch('order', 123)
+dispatch('order1')
+dispatch('order1', 123)
+dispatch('order2', 123)

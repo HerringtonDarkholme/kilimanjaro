@@ -1,6 +1,6 @@
 {
   "name": "kilimanjaro",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Awesome Vuex2.0's for TypeScript2.0",
   "main": "./dist/index.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "rimraf": "^2.5.4",
     "sinon": "^1.17.5",
     "sinon-chai": "^2.8.0",
-    "typescript": "2.1.0-dev.20160915",
+    "typescript": "2.1.0-dev.20161018",
     "vue": "^2.0.0-rc.8"
   },
   "peerDependencies": {

@@ -113,7 +113,7 @@ function registerMutations(store: StoreImpl, mutations: MutateDefs, state: State
   const _mutations = store._mutations
   for (let key in mutations) {
     _mutations[key] = _mutations[key] || []
-    const mutation = mutations[key](state)
+    const mutation = mutations[key].bind(null, state)
     _mutations[key].push(mutation)
   }
 }
@@ -122,7 +122,7 @@ function registerActions(store: StoreImpl, actions: ActDefs, state: State) {
   const _actions = store._actions
   for (let key in actions) {
     _actions[key] = _actions[key] || []
-    const action = actions[key]({
+    const action = actions[key].bind(null, {
       state: state,
       getters: store.getters,
       commit: store.commit,
