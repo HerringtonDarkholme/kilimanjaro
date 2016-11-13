@@ -118,10 +118,12 @@ describe('Kilimanjaro', () => {
       .mutation('dec', s => () => s.count--)
       .done()
     const { commit } = getHelper(store)
+    Component.inDefinition = true
     commit('inc')()
     expect(store.state.count).to.equal(1)
     commit('dec')()
     expect(store.state.count).to.equal(0)
+    Component.inDefinition = false
   })
 
   it('helper: getter', () => {
@@ -132,6 +134,7 @@ describe('Kilimanjaro', () => {
       .getter('negative', ({count}) => count < 0)
       .done()
     const { commit, getters } = getHelper(store)
+    Component.inDefinition = true
     let hasAnyImpl: any = getters('hasAny')
     let negativeImpl: any = getters('negative')
     expect(hasAnyImpl.__isgetter).to.equal(true)
@@ -145,6 +148,7 @@ describe('Kilimanjaro', () => {
     commit('dec')()
     expect(hasAnyImpl()).to.equal(false)
     expect(negativeImpl()).to.equal(true)
+    Component.inDefinition = false
   })
 
   it('helper: action', () => {
@@ -156,11 +160,13 @@ describe('Kilimanjaro', () => {
       .done()
 
     const {dispatch} = getHelper(store)
+    Component.inDefinition = true
     dispatch('a')()
     expect(a).to.have.been.called
     expect(b).not.to.have.been.called
     dispatch('b')()
     expect(b).to.have.been.called
+    Component.inDefinition = false
   })
 
   it('module: mutation', () => {
