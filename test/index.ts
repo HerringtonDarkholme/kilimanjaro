@@ -1,4 +1,4 @@
-import {create, getHelper, Vuex } from '../index'
+import {create, getHelper, Store } from '../index'
 import * as chai from 'chai'
 import {expect} from 'chai'
 import * as sinonChai from 'sinon-chai'
@@ -354,8 +354,8 @@ describe('Kilimanjaro', () => {
 
     @Component
     class Test extends Vue {
-      @Vuex getter = getters('getter')
-      @Vuex mut = commit(TEST)
+      @Store getter = getters('getter')
+      @Store mut = commit(TEST)
     }
 
     let tst = new Test()

@@ -13,9 +13,14 @@ const VUEX_PROP = '$$Vuex' as $$Prop
 const GetterKey = '__isgetter'
 
 
-export function Vuex(target: Vue, key: string): void {
+export function Store(target: Vue, key: string): void {
   let vuexProps = target[VUEX_PROP] = target[VUEX_PROP] || []
   vuexProps.push(key)
+}
+
+export function Vuex(target: Vue, key: string): void {
+  console.warn('@Vuex decorator is deprecated! Please use @Store')
+  Store(target, key)
 }
 
 // we return a fake getter in helper to achieve a good API surface

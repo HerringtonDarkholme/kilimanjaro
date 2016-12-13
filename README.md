@@ -53,4 +53,17 @@ var allCoffeeShop = create()
     // get sub state
     store.state.$('rabbitHouse')
   })
+
+
+// components
+import {Store, getHelper} from 'kilimanjaro'
+import {Component} from 'av-ts'
+
+const { getters, commit } = getHelper(rabbitHouse)
+
+@Component
+class Comp extends Vue {
+  @Store coffee = getter('coffee')
+  @Store payCheck = commit('pay_check')
+}
 ```
