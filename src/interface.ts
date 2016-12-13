@@ -55,17 +55,36 @@ export interface MutationHandler0<T> {
 export interface MutationHandler1<T> {
   (this: void, t: T, opt?: CommitOption): void
 }
+
+// mutation definition object
+export type MDO<S, T> = {
+  [K in keyof T]: (s: S, t: T[K]) => void
+}
+
 export interface C0<K, T> {
   (k: K, t?: T, opt?: CommitOption): void
+}
+export interface CO0<T> {
+  (k: keyof T, t?: undefined, opt?: CommitOption): void
 }
 export interface C1<K, T> {
   (k: K, t: T, opt?: CommitOption): void
 }
+export interface CO1<T> {
+  <K extends keyof T>(k: K, t: T[K], opt?: CommitOption): void
+}
+
 export interface CH0<K, T> {
   (k: K): MutationHandler0<T>
 }
+export interface COH0<T> {
+  (k: keyof T): MutationHandler0<undefined>
+}
 export interface CH1<K, T> {
   (k: K): MutationHandler1<T>
+}
+export interface COH1<T> {
+  <K extends keyof T>(k: K): MutationHandler1<T[K]>
 }
 
 // action definition
@@ -94,6 +113,11 @@ export interface P0<K, T> {
   type: K
   payload?: T
 }
+
+export interface PO0<T> {
+  type: keyof T
+}
+
 export interface P1<K, T> {
   type: K
   payload: T
@@ -127,7 +151,6 @@ export type BasePlugin = Plugin<BaseStore>
 export type BaseSubscriber = Subscriber<BP, {}>
 export type BaseHelper = Helper<BG, BCH, BDH>
 
-
 // type level wizardry
 export interface Opt<S, G extends BG, C extends BC, D extends BD, P extends BP, CH extends BCH, DH extends BDH> {
   getter<K extends string, T>(key: K, f: GetDef<S, G, T>): Opt<S, Getters<K, T> & G, C, D, P, CH, DH>
@@ -135,6 +158,10 @@ export interface Opt<S, G extends BG, C extends BC, D extends BD, P extends BP, 
 
   mutation<K extends string, T>(key: K, f: MD0<S, T>): Opt<S, G, C0<K, T> & C, D, P0<K, T> | P, CH0<K, T> & CH, DH>
   mutation<K extends string, T>(key: K, f: MD1<S, T>): Opt<S, G, C1<K, T> & C, D, P1<K, T> | P, CH1<K, T> & CH, DH>
+
+  mutations<T extends {[k: string]: (s: S) => void}>(commits: T): Opt<S, G, CO0<T> & C, D, PO0<T> | P, COH0<T> & CH, DH>
+  mutations<T>(commits: MDO<S, T> & {[k: string]: (s: S, t: any) => void} ): Opt<S, G, CO1<T> & C, D, P1<keyof T, T> | P, COH1<T> & CH, DH>
+
   declareMutation<K extends string, T>(): Opt<S, G, C1<K, T> & C, D, P1<K, T> | P, CH1<K, T> & CH, DH>
 
   action<K extends string, T, R>(key: K, f: AD0<S, G, C, D, T, R>): Opt<S, G, C, D0<K, T, R> & D,  P, CH, DH0<K, T, R> & DH>

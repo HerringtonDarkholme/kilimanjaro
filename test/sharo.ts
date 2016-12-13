@@ -59,6 +59,31 @@ var allCoffeeShop = create()
   .done()
 
 
+var smallBean = create({
+  cappuccino: '123',
+  nutmeg: 123,
+  jogmaya: true
+})
+.mutations({
+  byon(s) {
+    s.cappuccino
+  },
+  narasutekidai(s) {
+    s.nutmeg
+  }
+})
+.mutations({
+  byonbyon(s, times: number) {
+    while (times--) {
+      s.cappuccino
+    }
+  }
+})
+.done()
+
+smallBean.commit('byonbyon', 3)
+smallBean.commit('byon')
+
 var commit = allCoffeeShop.commit
 var dispatch = allCoffeeShop.dispatch
 
