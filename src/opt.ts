@@ -49,11 +49,26 @@ export default class OptImpl implements BaseOpt {
     this._getters[key] = f
     return this
   }
+  getters(opts: {}) {
+    for (let key of Object.keys(opts)) {
+      this._getters[key] = opts[key]
+    }
+    return this
+  }
   declareGetter() { return this }
 
   mutation(key: string, f: BaseMutateDef) {
     this._mutations[key] = f
     return this
+  }
+  mutations(opts: {}) {
+    for (let key of Object.keys(opts)) {
+      this._mutations[key] = (s: any) => (arg?: any) => opts[key](s, arg)
+    }
+    return this
+  }
+  mutationsWithArg(opts: {}) {
+    return this.mutations(opts)
   }
   declareMutation() { return this }
 
@@ -61,6 +76,16 @@ export default class OptImpl implements BaseOpt {
     this._actions[key] = f
     return this
   }
+  actions(opts: {}) {
+    for (let key of Object.keys(opts)) {
+      this._actions[key] = (s: any) => (arg?: any) => opts[key](s, arg)
+    }
+    return this
+  }
+  actionsWithArg(opts: {}) {
+    return this.actions(opts)
+  }
+
   declareAction() { return this }
 
   module(key: string, o: OptImpl) {

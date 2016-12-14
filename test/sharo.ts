@@ -72,17 +72,35 @@ var smallBean = create({
     s.nutmeg
   }
 })
-.mutations({
+.mutationsWithArg({
   byonbyon(s, times: number) {
     while (times--) {
       s.cappuccino
     }
   }
 })
+.actions({
+  dance(s) {
+    return 1233
+  }
+})
+.actionsWithArg({
+  onnesan(s, k: string) {
+    return true
+  }
+})
+.getters({
+  furufuru(s) {
+    return 'weaaaaaa' + s.cappuccino
+  }
+})
 .done()
 
 smallBean.commit('byonbyon', 3)
 smallBean.commit('byon')
+smallBean.dispatch('dance').then(s => s[0].toExponential)
+smallBean.dispatch('onnesan', 'kke').then(s => s[0].valueOf)
+smallBean.getters('furufuru').charCodeAt
 
 var commit = allCoffeeShop.commit
 var dispatch = allCoffeeShop.dispatch
