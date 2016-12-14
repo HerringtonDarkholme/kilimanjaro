@@ -26,6 +26,30 @@ describe('Kilimanjaro', () => {
     console['error']['restore']()
   })
 
+  it('should add collections', done => {
+    const store = create({
+      test: 123
+    })
+    .getters({
+      testGet: s => s.test + 1
+    })
+    .mutations({
+      commit: s => s.test += 1
+    })
+    .actionsWithArg({
+      dispatch: (s, k: string) => k + ' from action'
+    })
+    .done()
+
+    expect(store.getters('testGet')).to.equal(124)
+    store.commit('commit')
+    expect(store.getters('testGet')).to.equal(125)
+    expect(store.dispatch('dispatch', 'hello').then(k => {
+      expect(k[0]).to.equal('hello from action')
+      done()
+    }))
+  })
+
   it('committing mutations', () => {
     const store = create({
       a: 1
@@ -68,6 +92,30 @@ describe('Kilimanjaro', () => {
         resolve()
       }, 0)
     }))
+    .done()
+
+    store.dispatch(TEST, 2).then(() => {
+      expect(store.state.a).to.equal(3)
+      done()
+    })
+    expect(store.state.a).to.equal(1)
+  })
+
+  it('dispatch actions and return Promise', done => {
+    const store = create({
+      a: 1
+    })
+    .mutation(TEST, s => (n: number) => {
+      s.a += n
+    })
+    .actionsWithArg({
+      [TEST]: ({commit}, n: number) => new Promise(resolve => {
+        setTimeout(() => {
+          commit(TEST, n)
+          resolve()
+        }, 0)
+      })
+    })
     .done()
 
     store.dispatch(TEST, 2).then(() => {
