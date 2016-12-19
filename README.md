@@ -5,6 +5,7 @@ Awesome Vuex2.0 for TypeScript2.0
 
 It provide a concise, idiomatic and type safe Vuex like API for TypeScript.
 
+**WARNING: Highly Experimental! DON'T use it in production!** (unless you are a TS guru)
 
 Example
 ----
